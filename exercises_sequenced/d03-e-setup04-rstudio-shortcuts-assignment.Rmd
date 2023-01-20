@@ -32,33 +32,34 @@ knitr::opts_chunk$set(echo = TRUE)
 * Within the script editor or a chunk
 
     * `Alt` + `-`
-
+      add <-
 
     * `Shift` + `Cmd/Ctrl` + `M`
-
+      add %>%
 
     * `Cmd/Ctrl` + `Enter`
-
+      run cell
 
     * `F1` (Note: on a Mac you need to press `fn` + `F1`)
-
+      help
 
 	* `Cmd/Ctrl` + `Shift` + `C`
-
+      toggle comments
 
 
 * Within R Markdown
 
     * `Cmd/Ctrl` + `Alt` + `I`
+      new code block
 
 
 * Within a chunk
 
     * `Shift` + `Cmd/Ctrl` + `Enter`
-
+      run it
 
     * `Ctrl` + `I` (`Cmd` + `I`)
-
+      reindent lines
 
 Try this below!
 
@@ -66,9 +67,9 @@ Try this below!
 ## Re-indent these lines
 c(
   "foo",
-    "bar",
-      "goo",
-        "gah"
+  "bar",
+  "goo",
+  "gah"
 )
 ```
 
@@ -77,14 +78,19 @@ c(
 
 * Run the code, don't display it, but show its results?
 
+{r, echo=FALSE}
 
 * Run the code, but don't display it or its results?
 
+{r, echo=FALSE, results='hide'}
 
 ### __q3__ How do stop the code in a chunk from running once it has started?
 
+Esc
 
 ### __q4__ How do you show the "Document Outline" in RStudio?
+
+Ctrl+Shift+O
 
 *Hint*: Try googling "rstudio document outline"
 
