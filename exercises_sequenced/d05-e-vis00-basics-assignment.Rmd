@@ -30,10 +30,18 @@ knitr::opts_chunk$set(echo = TRUE)
 *Hint*: We learned how to inspect a dataset in `e-data-00-basics`!
 
 ```{r q1-task, eval=FALSE}
+?diamonds
 ```
+
+Cut is the quality of the cut, color is the color of the diamond represented by
+a single letter, and clarity is a measure of how clear the diamond is (also a
+string).
 
 ### __q2__ Use your "standard checks" to determine what variables the dataset has.
 
+```{r}
+diamonds %>% glimpse()
+```
 
 Now that we have the list of variables in the dataset, we know what we can visualize!
 
@@ -46,12 +54,17 @@ y` pairs. Language is hard!
 
 ```{r q3-task}
 ## TODO: Complete this code
-ggplot(diamonds)
+diamonds %>% 
+  ggplot(
+    aes(x = price, y = carat)
+  ) + geom_point()
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- The more expensive diamonds have more carats, although it seems to have a
+small slope (price vs carat)
+- The number of carats at a given price is right skewed
 
 ## A note on *aesthetics*
 
@@ -69,12 +82,20 @@ simultaneously.
 
 ```{r q4-task}
 ## TODO: Complete this code
-ggplot(diamonds)
+diamonds %>% 
+  ggplot(
+    aes(x = price, y = carat)
+  ) + geom_point(
+    aes(color = cut)
+  )
 ```
 
 **Observations**:
 
-- (Write your observations here!)
+- Looking at a single vertical line,
+ideal cuts can have a higher price with fewer carats.
+- Looking at a single horizontal line,
+the higher-priced diamonds have more ideal cuts.
 
 <!-- include-exit-ticket -->
 # Exit Ticket

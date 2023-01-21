@@ -1,7 +1,7 @@
 ---
 title: "Getting Started: Diamonds"
-author: "(Your name here)"
-date: 2020-
+author: "Andrew Mascillaro"
+date: 2023-01-21
 output:
   github_document:
     toc: true
@@ -57,24 +57,33 @@ In this first stage, you will explore the `diamonds` dataset and document your o
 *Hint*: We learned how to do this in `e-vis00-basics`!
 
 ```{r q1-task}
-## TASK: Plot `price` vs `carat` below
-## Your code here!
+diamonds %>%
+  ggplot(
+    aes(x = price, y = carat)
+  ) + geom_point()
 ```
 
 **Observations**:
 
--   (Write your observations here!)
+-   The more expensive diamonds have more carats, although it seems to have a small slope (price vs carat)
+
+-   The number of carats at a given price is right skewed
 
 ### **q2** Create a visualization showing variables `carat`, `price`, and `cut` simultaneously. Experiment with which variable you assign to which aesthetic (`x`, `y`, etc.) to find an effective visual.
 
 ```{r q2-task}
-## TASK: Plot `price`, `carat`, and `cut` below
-## Your code here!
+diamonds %>% 
+  ggplot(
+    aes(x = price, y = carat)
+  ) + geom_point(
+    aes(color = cut)
+  )
 ```
 
 **Observations**:
 
--   (Write your observations here!)
+-   Looking at a single vertical line, ideal cuts can have a higher price with fewer carats.
+-   Looking at a single horizontal line, the higher-priced diamonds have more ideal cuts.
 
 # Communication
 
