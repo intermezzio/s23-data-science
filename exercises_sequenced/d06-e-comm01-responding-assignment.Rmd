@@ -94,8 +94,11 @@ Here the bolded response is *actively* engaging with your colleague's question, 
 **Observations**:
 
 - Is the bolded response **active** or **passive**? Why?
+  - The bolded response is active because it directly addresses the previous comment.
 - Is the bolded response **constructive** or **destructive**? Why?
+  - The bolded response is constructive because it conveys positive emotion and resolves the issue.
 - How does this statement make you *feel*, relative to the bolded statement before the q1 prompt?
+  - This makes me feel valued as the feedback is properly addressed in a good way.
 
 ### __q2__ Identify the nature of the bolded line below, rating it as either **active vs passive** and **constructive vs destructive**.
 
@@ -108,8 +111,11 @@ Here the bolded response is *actively* engaging with your colleague's question, 
 **Observations**:
 
 - Is the bolded response **active** or **passive**? Why?
+  - The response is passive because it does little to address the concern.
 - Is the bolded response **constructive** or **destructive**? Why?
+  - The response is constructive because it conveys positive emotion in acknowledging the issue.
 - How does this statement make you *feel*, relative to the bolded statement before the q1 prompt?
+  - This leaves me confused, as the graph is still unlabeled and ambiguous.
 
 **Intermediate Conclusion**: We can quite naturally think of discussion responses in the APCD framework. Therefore, we should try to give active and constructive responses in data discussions!
 
@@ -175,7 +181,9 @@ Let's practice once more!
 **Observations**:
 
 - Is the bolded response **active** or **passive**? Why?
+  - This is active passive because it doesn't actively build on the previous statement.
 - Is the bolded response **constructive** or **destructive**? Why?
+  - This is destructive because it is irrelevant information that seems to question the premise of analyzing this data as a whole.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
@@ -183,7 +191,7 @@ Let's practice once more!
 
 Once you have completed this exercise, make sure to fill out the **exit ticket survey**, [linked here](https://docs.google.com/forms/d/e/1FAIpQLSeuq2LFIwWcm05e8-JU84A3irdEL7JkXhMq5Xtoalib36LFHw/viewform?usp=pp_url&entry.693978880=e-comm01-responding-assignment.Rmd).
 
-## Refrences
+## References
 <!-- -------------------------------------------------- -->
 
 - [1] Gable, S. L., Reis, H. T., Impett, E. A., & Asher, E. R. (2004). What do you do when things go right? The intrapersonal and interpersonal benefits of sharing positive events. Journal of Personality and Social Psychology, 87, 228-245.

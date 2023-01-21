@@ -33,8 +33,9 @@ the same visual using `geom_col()`.
 
 ```{r q1-task}
 mpg %>%
-  ggplot(aes(trans)) +
-  geom_bar()
+  count(trans) %>% 
+  ggplot(aes(trans, n)) +
+  geom_col()
 ```
 
 The reading mentioned that when using `geom_col()` our x-y data should be
@@ -57,11 +58,12 @@ mpg %>% filter(cty == 20)
 ```{r q2-task}
 mpg %>%
   ggplot(aes(x = cty, y = hwy)) +
-  geom_col()
+  geom_col(position = "dodge")
 ```
 
 **Observations**:
-- Write your observations here!
+- There is no highway 27.
+- Cities indexed with higher numbers have highways indexed with higher numbers.
 
 A more standard way to visualize this kind of data is a *scatterplot*, which
 we'll study later. For now, here's an example of a more effective way to
@@ -87,7 +89,8 @@ mpg %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- The class attribute is repeated in both the x axis and color.
+- There are more SUVs and compact cars, and fewer two seaters.
 
 ```{r q4-v2}
 ## TODO: Run this code without changing, describe your observations on the data
@@ -97,12 +100,13 @@ mpg %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- All 2 seaters are two wheel drive.
+- Most SUVs and pickups are 4 wheel drive.
+- Only the subcompact model has options for forward and rear wheel drive.
 
 **Compare `v1` and `v2`**:
 
-- Which visualization---`v1` or `v2`---enabled you to make more observations?
-- What was the difference between `v1` and `v2`?
+- V2 had more data to make observations on, primarily because v1 repeated data in color and x axis.
 
 ### __q4__ The following code has a bug; it does not do what its author intended.
 Identify and fix the bug. What does the resulting graph tell you about the
@@ -113,13 +117,13 @@ do this in a future exercise.
 
 ```{r q4-task}
 mpg %>%
-  ggplot(aes(x = manufacturer, fill = class), position = "dodge") +
-  geom_bar() +
+  ggplot(aes(x = manufacturer, fill = class)) +
+  geom_bar(position = "dodge") +
   theme(axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0))
 ```
 
 **Observations**
-- Your observations here!
+- Dodging in the bar plot allows it to split the data after it's put into bars.
 
 ### __q5__ The following graph is hard to read. What other form of faceting would
 make the visual more convenient to read? Modify the code below with your
@@ -127,9 +131,8 @@ suggested improvement.
 
 ```{r q5-task}
 mpg %>%
-  ggplot(aes(x = cyl)) +
-  geom_bar() +
-  facet_grid(~ manufacturer)
+  ggplot(aes(x = manufacturer, fill = as.character(cyl))) +
+  geom_bar(position = "stack")
 ```
 
 <!-- include-exit-ticket -->

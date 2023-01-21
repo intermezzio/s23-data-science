@@ -44,7 +44,12 @@ library(tidyverse)
 to do? Do those simple checks on the diamonds dataset below.
 
 ```{r q0-task}
+head(diamonds)
 ```
+```{r}
+glimpse(diamonds)
+```
+
 
 I'm going to walk you through a train of thought I had when studying the
 diamonds dataset.
@@ -70,7 +75,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This is not true as the Ideal cut is most common.
 
 ## Hypothesis 2
 
@@ -87,7 +92,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This is not an effective graph because the points overlap and don't make the distribution clear.
 
 The following is a set of *boxplots*; the middle bar denotes the median, the
 boxes denote the *quartiles* (upper and lower "quarters" of the data), and the
@@ -102,7 +107,9 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- This is npt true, as the ideal cuts have a lower median price and quartile range than the others.
+- However, there may be confounding variables (like clarity and size) that are not adjusted for
+in this plot. Maybe ideal cuts tend to be smaller!
 
 ## Unraveling Hypothesis 2
 
@@ -122,7 +129,7 @@ diamonds %>%
 ```
 
 **Observations**:
-- Write your observations here!
+- As I guessed in the last question, the ideal cuts do tend to have fewer carats.
 
 ## Footnotes
 
