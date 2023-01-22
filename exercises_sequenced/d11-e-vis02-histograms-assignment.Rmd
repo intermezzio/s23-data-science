@@ -46,6 +46,8 @@ mpg %>%
   geom_density()
 ```
 
+- SUV has the most vehicles (see graph 1).
+- Subcompact has the most distribution over cities (see graph 2).
 
 In the previous exercise, we learned how to *facet* a graph. Let's use that part of the grammar of graphics to clean up the graph above.
 
@@ -54,7 +56,8 @@ In the previous exercise, we learned how to *facet* a graph. Let's use that part
 ```{r q2-task}
 mpg %>%
   ggplot(aes(cty, color = class)) +
-  geom_density()
+  geom_density() +
+  facet_wrap(~class, scales = "free_y")
 ```
 
 In the reading, we learned that the "most important thing" to keep in mind with `geom_histogram()` and `geom_freqpoly()` is to _explore different binwidths_. We'll explore this idea in the next question.
@@ -67,7 +70,7 @@ diamonds %>%
   filter(carat < 1.1) %>%
 
   ggplot(aes(carat)) +
-  geom_histogram(binwidth = 0.01, boundary = 0.005) +
+  geom_histogram(binwidth = 0.05, boundary = 0.005) +
   scale_x_continuous(
     breaks = seq(0, 1, by = 0.1)
 
@@ -75,7 +78,13 @@ diamonds %>%
 ```
 
 **Observations**
-- Write your observations here!
+- With a bin width of 0.01, it's clear many are exactly 0.5, 0.7, or other round
+numbers of carats, but more ``arbitrary" carat numbers are less common.
+- With a bin width of 0.1, the most common amount of carats is 0.3 to 0.4 carats.
+- When the bin width is significantly less than 0.01, it's clear that most carat
+counts are at discrete values and most of the bins are sparse. However the first
+observation is still clear.
+- Most bin widths can capture the general trend of the data.
 
 <!-- include-exit-ticket -->
 # Exit Ticket

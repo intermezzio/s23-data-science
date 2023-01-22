@@ -1,7 +1,7 @@
 ---
 title: "Aluminum Data"
-author: "(Your name here)"
-date: 2020-
+author: "Andrew Mascillaro"
+date: 2023-01-22
 output:
   github_document:
     toc: true
@@ -66,7 +66,18 @@ Note that these data are not tidy! The data in this form are convenient for repo
 ```{r q1-task}
 ## TASK: Tidy `df_stang`
 df_stang_long <-
-  df_stang
+  df_stang %>% 
+    pivot_longer(
+      names_to = c(".value", "angle"),
+      names_sep = "_",
+      names_transform = list(angle = as.integer),
+      values_to = ".value",
+      cols = contains("_")
+    ) %>% filter(
+      E != -1
+    ) %>% rename(
+      nu = mu
+    )
 
 df_stang_long
 ```
@@ -100,21 +111,43 @@ print("Very good!")
 
 ### __q2__ Perform a basic EDA on the aluminum data *without visualization*. Use your analysis to answer the questions under *observations* below. In addition, add your own *specific* question that you'd like to answer about the data---you'll answer it below in q3.
 
+
 ```{r q2-task}
-##
+df_stang_long %>% 
+  count(alloy)
+```
+
+
+```{r q2-task-2}
+df_stang_long %>% 
+  count(angle)
+```
+
+
+```{r q2-task-3}
+df_stang_long %>% 
+  count(thick)
+```
+
+
+```{r q2-task-4}
+df_stang_long %>% 
+  summary()
 ```
 
 **Observations**:
 
 - Is there "one true value" for the material properties of Aluminum?
-  - (Your response here)
+  - No, the values of E and nu vary.
 - How many aluminum alloys are in this dataset? How do you know?
-  - (Your response here)
+  - one because there is only one unique value in the alloy column.
 - What angles were tested?
-  - (Your response here)
+  - The angles tested were 0, 45, and 90 degrees.
 - What thicknesses were tested?
-  - (Your response here)
-- (Write your own question here)
+  - The thicknesses tested were 0022, 0.032, 0.064, 0.081 (inches?).
+- What is the distribution of nu values received?
+  - The nu values range from 0.31 to 0.0331, although more information can
+  help determine more about the distribution.
 
 ## Visualize
 <!-- ------------------------- -->
@@ -122,12 +155,16 @@ print("Very good!")
 ### __q3__ Create a visualization to investigate your question from q2 above. Can you find an answer to your question using the dataset? Would you need additional information to answer your question?
 
 ```{r q3-task}
-## TASK: Investigate your question from q1 here
+df_stang_long %>% 
+  ggplot(aes(x = nu)) +
+  geom_density()
 ```
 
 **Observations**:
 
-- (Address your question from q1 here)
+- The nu values seem to have an almost uniform distribution, although more tests
+with more estimated nu values may help determine whether this is uniform, normal,
+or something completely different.
 
 ### __q4__ Consider the following statement:
 
@@ -147,7 +184,8 @@ df_stang_long %>%
 **Observations**:
 
 - Does this graph support or contradict the claim above?
-  - (Your response here)
+  - This supports the above claim, as thicker blocks have a higher modulus of
+  elasticity.
 
 # References
 <!-- -------------------------------------------------- -->
