@@ -55,12 +55,12 @@ First, we'll go through a round of *guided EDA*. Try to pay attention to the hig
 dataset?
 
 ```{r q0-task}
-## TASK: Do your "first checks" here!
+gapminder %>% glimpse()
 ```
 
 **Observations**:
 
-- Write all variable names here
+- The variables include country, continent, year, lifeExp, pop, and gdpPercap
 
 ### __q1__ Determine the most and least recent years in the `gapminder` dataset.
 
@@ -68,8 +68,12 @@ dataset?
 
 ```{r q1-task}
 ## TASK: Find the largest and smallest values of `year` in `gapminder`
-year_max <- NA_real_
-year_min <- NA_real_
+year_max <- gapminder %>% 
+  pull(year) %>% 
+  max()
+year_min <- gapminder %>% 
+  pull(year) %>% 
+  min()
 ```
 
 Use the following test to check your work.
@@ -94,27 +98,51 @@ print("Nice!")
 You may encounter difficulties in visualizing these data; if so document your challenges and attempt to produce the most informative visual you can.
 
 ```{r q2-task}
-## TASK: Create a visual of gdpPercap vs continent
+gapminder %>% 
+  filter(year == year_min) %>% 
+  ggplot(aes(x = continent, y = gdpPercap)) +
+  geom_violin()
+```
+
+
+```{r q2-task-2}
+gapminder %>% 
+  filter(year == year_min) %>% 
+  ggplot(aes(x = continent, y = gdpPercap)) +
+  geom_boxplot()
 ```
 
 **Observations**:
 
-- Write your observations here
+- GDP per capita within a continent is very right skewed.
 
 **Difficulties & Approaches**:
 
-- Write your challenges and your approach to solving them
+- It's difficult to visualize the distribution of GDP per capita with outliers
+that are so much larger than nearby countries.
+- Originally I attempted to use a scatterplot but the points were too cluttered.
+- Then, I tried a box plot, although the outliers made the graph so zoomed out
+that the distribution of GDP per capita within a continent was hard to observe.
+- As a result, I used a violin plot to show distribution. The box plot is still
+shown to help find outliers in the next question.
 
 ### __q3__ You should have found *at least* three outliers in q2 (but possibly many more!). Identify those outliers (figure out which countries they are).
 
 ```{r q3-task}
-## TASK: Identify the outliers from q2
+gapminder %>% 
+  filter(year == year_min) %>% 
+  arrange(desc(gdpPercap)) %>% 
+  group_by(continent) %>% 
+  slice(1:3)
 ```
 
 **Observations**:
 
 - Identify the outlier countries from q2
-  - (Your response here)
+  - The top 2 countries in Africa, top 3 countries in the Americas, top 2 countries
+  in Asia, and top country in Europe are outliers.
+  - That includes South Africa, Gabon, the United States, Canada, Venezuela,
+  Kuwait, Bahrain, and Switzerland.
 
 *Hint*: For the next task, it's helpful to know a ggplot trick we'll learn in an upcoming exercise: You can use the `data` argument inside any `geom_*` to modify the data that will be plotted *by that geom only*. For instance, you can use this trick to filter a set of points to label:
 
@@ -137,12 +165,28 @@ gapminder %>%
 *Hint*: We've learned a lot of different ways to show multiple variables; think about using different aesthetics or facets.
 
 ```{r q4-task}
-## TASK: Create a visual of gdpPercap vs continent
+gapminder %>%
+  filter(year == year_min | year == year_max) %>% 
+  ggplot(aes(x = continent, y = gdpPercap)) +
+  geom_violin() +
+  geom_point(
+    data = . %>% filter(country %in% c("South Africa", "Gabon", "United States",
+                                       "Canada", "Venezuela", "Kuwait", "Bahrain",
+                                       "Switzerland")),
+    mapping = aes(color = country),
+    size = 2
+  ) +
+  facet_wrap(~year)
 ```
 
 **Observations**:
 
-- Write your observations here
+- The outlier countries in 1952 are all still above average in their countries
+today, which I found surprising because I expected at least one of the countries
+to be unstable (as a few have rather unstable economies like Kuwait).
+- Apart from Kuwait, the outliers in gdp per capita are more apparent in 2007. In
+other words, the income gap (or difference in average wealth) is greater in 2007
+than in 1952.
 
 # Your Own EDA
 <!-- -------------------------------------------------- -->
@@ -152,19 +196,47 @@ Now it's your turn! We just went through guided EDA considering the GDP per capi
 ### __q5__ Create *at least* three new figures below. With each figure, try to pose new questions about the data.
 
 ```{r q5-task1}
-## TASK: Your first graph
+top_countries <- gapminder %>% 
+  filter(year == year_max) %>% 
+  arrange(desc(gdpPercap)) %>% 
+  group_by(continent) %>% 
+  slice(1:2) %>% 
+  pull(country)
+df_q5 <- gapminder %>% 
+  filter(country %in% top_countries)
+df_q5
 ```
 
-- (Your notes and observations here)
+
+```{r q5-task1-2}
+df_q5 %>% 
+  ggplot(aes(x = year, y = gdpPercap)) +
+  geom_line(aes(color = country))
+```
+
+- The GDP per capita of the top countries slowly rose over time, at least except
+for Kuwait.
+- These lines all look similar, but how does the overall gdp compare? What if
+we compared GDP instead of GDP per capita?
+
 
 ```{r q5-task2}
-## TASK: Your second graph
+df_q5 %>%
+  mutate(gdp = gdpPercap * pop) %>% 
+  ggplot(aes(x = year, y = gdp)) +
+  geom_line(aes(color = country))
 ```
 
-- (Your notes and observations here)
+- Wow, Australia has the highest GDP by far of all of these countries. If we
+use a logarithmic y axis can we draw more conclusions about the other countries?
 
 ```{r q5-task3}
-## TASK: Your third graph
+df_q5 %>%
+  mutate(gdp = gdpPercap * pop) %>%
+  ggplot(aes(x = year, y = gdp)) +
+  geom_line(aes(color = country)) +
+  scale_y_continuous(trans = 'log10')
 ```
 
-- (Your notes and observations here)
+- The lines in these graphs appear linear, which indicates exponential
+growth in GDP for the richest countries in each continent.

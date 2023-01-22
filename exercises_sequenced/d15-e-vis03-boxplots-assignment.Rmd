@@ -39,13 +39,18 @@ your pick!
 ```{r q1-task}
 diamonds %>%
   ## TODO: Use mutate to add the column `carat_cut`
+  mutate(carat_cut = cut_width(carat, width = 0.5)) %>% 
   ggplot(aes(x = carat_cut, y = price)) +
   geom_boxplot()
 ```
 
 **Observations**
-- Write your observations here!
-- Make sure to distinguish between the trend in median (bar), quantiles (box edges), and whiskers (vertical lines)
+- More carats generally lead to a higher price.
+- The median price increases with carats between 0 and 2.5 carats.
+- Diamonds of at least 0.75 carats can sell for close to the maximum price in
+this dataset.
+- There is a higher interquartile range for diamonds with an average number of
+carats, as opposed to a very low or high amount of carats.
 
 ### __q2__ The following code visualizes the count of diamonds of *all* carats according to their cut and color. Modify the code to consider *only* diamonds with `carat >= 2`. Does the most common group of cut and color change?
 
@@ -62,6 +67,7 @@ Modify the following code:
 ```{r q2-task}
 ## TODO: Modify the code below to consider only diamonds with carat >= 2
 diamonds %>%
+  filter(carat >= 2) %>% 
   count(cut, color) %>%
   ggplot(aes(cut, color, fill = n)) +
   geom_tile()
@@ -69,13 +75,16 @@ diamonds %>%
 
 **Observations**:
 - Did the most common group of cut and color change?
+  - For diamonds with at least 2 carats, the most common group changes from ideal
+  to premium.
 
 ### __q3__ The following plot has overlapping x-axis labels. Use a verb from the reading to `flip` the coordinates and improve readability.
 
 ```{r q3-task}
 mpg %>%
   ggplot(aes(manufacturer, hwy)) +
-  geom_boxplot()
+  geom_boxplot() +
+  coord_flip()
 ```
 
 This is a simple---but important---trick to remember when visualizing data with many categories.
