@@ -87,12 +87,14 @@ Let's learn how to handle this:
 ```{r q1-task}
 ## TASK: Edit to drop all NAs before computing the mean
 flights %>%
+  drop_na() %>% 
   summarize(dep_delay = mean(dep_delay))
 ```
 
 **Observations**:
 
 - What is the mean departure delay time, among available values?
+  - The mean departure delay time among available values is 12.56 minutes.
 
 ## Central Tendency
 <!-- ------------------------- -->
@@ -165,14 +167,25 @@ flights %>%
   arrange(desc(mean)) %>%
   head(5)
 
-## TASK: Duplicate the code above, but sort by `median` instead
+flights %>%
+  group_by(carrier) %>%
+  summarize(
+    mean = mean(dep_delay, na.rm = TRUE),
+    median = median(dep_delay, na.rm = TRUE)
+  ) %>%
+  arrange(desc(median)) %>%
+  head(5)
 ```
 
 **Observations**:
 
 - Which carriers are at the top of both `mean` and `median` departure delay?
+  - At the top of both lists, we can see FL, WN, and F9.
 - Which carriers differ in the two lists?
+  - The EV and YV carriers are only in mean and the UA and UX carriers are only
+  in median.
 - What do negative values of `dep_delay` mean?
+  - Departures were earlier than anticipated.
 
 ## Multi-modality
 <!-- ------------------------- -->
@@ -247,7 +260,11 @@ set.seed(101)
 v_test_iqr <- rnorm(n = 10)
 
 ## TASK: Compute the interquartile range
-test_iqr <- NA_real_
+test_iqr <- v_test_iqr %>% 
+  quantile(., probs = c(0.25, 0.75), na.rm = TRUE) %>% 
+  diff()
+  
+test_iqr
 ```
 
 Use the following test to check your answer.
@@ -288,14 +305,34 @@ tibble(
 ### __q4__ Using the code from q2 as a starting point, compute the standard deviation (`sd()`) and interquartile range (`IQR()`), and rank the top five carriers, this time by sd and IQR. Report your observations on which carriers are in both lists, and which are different. Also note and comment on which carrier (among your top-ranked) has the largest difference between `sd` and `IQR`.
 
 ```{r q4-task}
-## TODO: Use code from q2 to compute the sd and IQR, rank as before
+## NOTE: No need to change this!
+flights %>%
+  group_by(carrier) %>%
+  summarize(
+    sd = sd(dep_delay, na.rm = TRUE),
+    iqr = IQR(dep_delay, na.rm = TRUE)
+  ) %>%
+  arrange(desc(sd)) %>%
+  head(5)
+
+flights %>%
+  group_by(carrier) %>%
+  summarize(
+    sd = sd(dep_delay, na.rm = TRUE),
+    iqr = IQR(dep_delay, na.rm = TRUE)
+  ) %>%
+  arrange(desc(iqr)) %>%
+  head(5)
 ```
 
 **Observations**:
 
 - Which carriers are at the top of both `sd` and `IQR` departure delay?
+  - F9, FL, YV, EV
 - Which carriers differ in the two lists?
+  - HA, 9E
 - Which carrier has the biggest difference between its `sd` and `IQR`? What might this mean?
+  - HA has the biggest difference - it may have a lot of outliers.
 
 ## Dependence
 <!-- ------------------------- -->
@@ -341,7 +378,7 @@ In the case of a *perfect linear relationships* the Pearson correlation takes th
 ### __q5__ Compute the Pearson correlation between `x, y` below. Play with the `slope` and observe the change in the correlation.
 
 ```{r ex-cor-line}
-slope <- 0.5 # Play with this value; observe the correlation
+slope <- -0.1 # Play with this value; observe the correlation
 df_line <-
   tibble(x = seq(-1, +1, length.out = 50)) %>%
   mutate(y = slope * x)
@@ -358,7 +395,9 @@ df_line %>%
 **Observations**:
 
 - For what values of `slope` is the correlation positive?
+  - Positive when the slope is positive
 - For what values of `slope` is the correlation negative?
+  - Negative when the slope is negative
 
 Note that this means *correlation is a measure of dependence*; it is **not** a measure of slope! It is better thought of as how *strong* the relationship between two variables is. A closer-to-zero correlation indicates a noisy relationship between variables, while a closer-to-one (in absolute value) indicates a more perfect, predictable relationship between the variables. For instance, the following code simulates data with different correlations, and facets the data based on the underlying correlation.
 
@@ -422,6 +461,12 @@ df_quad <-
   mutate(y = x^2 - 0.5)
 
 ## TASK: Compute the Pearson and Spearman correlations on `df_quad`
+df_quad %>%
+  summarize(rho = cor(x, y, method = "pearson"))
+
+df_quad %>%
+  summarize(rho = cor(x, y, method = "spearman"))
+
 
 df_quad %>%
   ggplot(aes(x, y)) +
@@ -431,7 +476,9 @@ df_quad %>%
 **Observations**:
 
 - What do you predict the correlations to be?
+  - I predicted the Pearson one to be zero and the Spearman one to be 1
 - What are the actual correlations?
+  - Both were about zero
 
 One last point about correlation: The mean is to Pearson correlation as the median is to Spearman correlation. The median and Spearman's rho are robust to outliers.
 

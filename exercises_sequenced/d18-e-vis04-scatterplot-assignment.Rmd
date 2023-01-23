@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r library}
 library(tidyverse)
-
+library(ggrepel)
 ```
 
 ## A Note on Layers
@@ -92,11 +92,14 @@ looks.
 ## TODO: Add a "gam" and "lm" smooth to the following plot
 diamonds %>%
   ggplot(aes(carat, price)) +
-  geom_point()
+  geom_point() +
+  geom_smooth(method = "gam") +
+  geom_smooth(method = "lm")
 ```
 
 **Observations**:
 - Does the "gam" trend look linear?
+  - No, the "gam" trend curves to match the data and appears polynomial.
 
 ### __q2__ Add non-overlapping labels to the following scattterplot using the
 provided `df_annotate`.
@@ -118,7 +121,8 @@ df_annotate <-
 
 mpg %>%
   ggplot(aes(displ, hwy)) +
-  geom_point(aes(color = class))
+  geom_point(aes(color = class)) +
+  geom_label_repel(data = df_annotate, aes(label = class))
 ```
 
 ### __q3__ Study the following scatterplot: Note whether city (`cty`) or highway
@@ -144,7 +148,9 @@ mpg %>%
 
 **Observations**:
 - Which tends to be larger? `cty` or `hwy` mileage?
+  - Highway milage tends to be higher.
 - What is the trend of mileage with `displ`?
+  - The mileage has a negative correlation with `displ`.
 
 ## Aside: Scatterplot vs bar chart
 <!-- -------------------------------------------------- -->

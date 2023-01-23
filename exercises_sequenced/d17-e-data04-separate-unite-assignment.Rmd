@@ -64,9 +64,14 @@ genes
 ### __q1__ Use a combination of `unite` and pivoting to turn `genes` into the same dataframe as `punnett`.
 
 ```{r q1-task}
-df_q1 <-
-  genes %>%
-## TODO: pivot and unite here!
+df_q1 <- genes %>%
+  unite(
+    "combined", sep = "", everything(), remove = FALSE
+  ) %>% 
+  pivot_wider(
+    names_from = parent2,
+    values_from = combined
+  )
 
 df_q1
 ```
@@ -105,9 +110,19 @@ separate to tidy these data.
 ### __q2__ Use a combination of `separate` and pivoting to tidy `alloys_mod`.
 
 ```{r q2-task}
-df_q2 <-
-  alloys_mod %>%
-## TODO: pivot and separate here!
+df_q2 <- alloys_mod %>%
+  pivot_longer(
+    names_to = "const_angle",
+    values_to = "datapoint",
+    cols = 2:5
+  ) %>% 
+  separate(
+    const_angle, into = c("const", "angle"), sep = -2
+  ) %>%
+  pivot_wider(
+    names_from = const,
+    values_from = datapoint
+  )
 
 df_q2
 ```

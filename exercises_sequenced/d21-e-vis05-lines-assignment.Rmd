@@ -36,7 +36,7 @@ library(gapminder)
 gapminder %>%
   filter(continent == "Asia") %>%
   ggplot(aes(year, lifeExp)) +
-  geom_line()
+  geom_point()
 ```
 
 ### __q2__ A line plot makes *a certain assumption* about the underlying data. What assumption is this? How does that assumption relate to the following graph? Put differently, why is the use of `geom_line` a bad idea for the following dataset?

@@ -75,15 +75,19 @@ Now it's your turn!
 
 ```{r q1-task}
 ## NOTE: No need to change this!
-df_z <- tibble(z = rnorm(100))
+df_z <- tibble(z = rnorm(100)) %>% 
+  mutate(A = z <= 0)
 
-## TODO: Compute `count_total`, `count_A`, and `fr`
+df_z %>% 
+  summarize(count_total = n(), count_A = sum(A), fr = count_A / count_total)
 ```
 
 **Observations**:
 
 - What value of `fr` did you predict?
+  - I predicted 0.5 for fr.
 - Did your prediction match your calculation?
+  - The prediction was very close to the output of 0.52 from the simualtion.
 
 The following graph visualizes the set $A = {z | z <= 0}$ against a standard normal density.
 
@@ -137,7 +141,7 @@ map_dfr(
       z = rnorm(n = n_samples),
       n = n_samples
     ) %>%
-      mutate(in_A = (z <= 0)) %>%
+      mutate(in_A = (-1.96 <= z & z <= 1.96)) %>%
       summarize(count_total = n(), count_A = sum(in_A), fr = mean(in_A))
   }
 )
@@ -146,6 +150,7 @@ map_dfr(
 **Observations**:
 
 - What value does `fr` appear to be limiting towards?
+  - It appears to approach approximately 0.95.
 
 Now that we know what probability is; let's connect the idea to *distributions*.
 
@@ -180,7 +185,7 @@ map_dfr(
       z = rnorm(n = n_samples),
       n = n_samples
     ) %>%
-      mutate(in_A = (z <= 0)) %>%
+      mutate(in_A = (z == 2)) %>%
       summarize(count_total = n(), count_A = sum(in_A), fr = mean(in_A))
   }
 )
@@ -189,6 +194,7 @@ map_dfr(
 **Observations**:
 
 - What value is `fr` approaching?
+  - The value of `fr` approaches zero.
 
 We can also understand this phenomenon in terms of areas; the following graph visualizes the set $A = {z | z = 2}$ against a standard normal.
 
@@ -252,7 +258,7 @@ Note that, by definition, the CDF gives the probability over the set $A = {x | x
 
 ```{r q4-task}
 ## TASK: Compute the probability that Z <= 0, assign to p0
-p0 <- NA_real_
+p0 <- pnorm(0, mean = 0, sd = 1)
 p0
 ```
 
@@ -276,7 +282,7 @@ $$\mathbb{P}_{\rho}[a <= X <= b] = \int_a^b \rho(x) dx = \int_{-\infty}^b \rho(x
 
 ```{r p5-task}
 ## TASK: Compute the probability that -1.96 <= Z <= +1.96, assign to pI
-pI <- NA_real_
+pI <- pnorm(1.96) - pnorm(-1.96)
 pI
 ```
 
