@@ -1,7 +1,7 @@
 ---
 title: "Antibiotics"
-author: "(Your name here)"
-date: 2020-
+author: "Andrew Mascillaro"
+date: 2023-01-24
 output:
   github_document
 ---
@@ -74,7 +74,16 @@ For all five of the visuals, you must show information on *all 16 bacteria*. For
 In this visual you must show *all three* effectiveness values for *all 16 bacteria*. You must also show whether or not each bacterium is Gram positive or negative.
 
 ```{r q1.1}
-# WRITE YOUR CODE HERE
+df_antibiotics %>% 
+  pivot_longer(
+    names_to = "antibiotic",
+    values_to = "MIC",
+    cols = ends_with("in")
+  ) %>% 
+  ggplot(aes(x = antibiotic, y = MIC)) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) + 
+  geom_point(aes(color = gram)) +
+  scale_y_continuous(trans='log10')
 ```
 
 #### Visual 2 (All variables)
@@ -84,7 +93,17 @@ In this visual you must show *all three* effectiveness values for *all 16 bacter
 Note that your visual must be *qualitatively different* from *all* of your other visuals.
 
 ```{r q1.2}
-# WRITE YOUR CODE HERE
+df_antibiotics %>% 
+  pivot_longer(
+    names_to = "antibiotic",
+    values_to = "MIC",
+    cols = ends_with("in")
+  ) %>% 
+  ggplot(aes(x = bacteria, y = MIC, fill = gram)) +
+  geom_col(aes(), position = "stack") +
+  scale_y_continuous(trans='log10') +
+  coord_flip() +
+  facet_wrap(~antibiotic)
 ```
 
 #### Visual 3 (Some variables)
@@ -94,7 +113,12 @@ In this visual you may show a *subset* of the variables (`penicillin`, `streptom
 Note that your visual must be *qualitatively different* from *all* of your other visuals.
 
 ```{r q1.3}
-# WRITE YOUR CODE HERE
+df_antibiotics %>% 
+  ggplot(aes(x = neomycin, y = streptomycin)) +
+  geom_point() +
+  scale_x_continuous(trans='log10') +
+  scale_y_continuous(trans='log10')
+
 ```
 
 #### Visual 4 (Some variables)
@@ -104,7 +128,18 @@ In this visual you may show a *subset* of the variables (`penicillin`, `streptom
 Note that your visual must be *qualitatively different* from *all* of your other visuals.
 
 ```{r q1.4}
-# WRITE YOUR CODE HERE
+df_antibiotics %>% 
+  pivot_longer(
+    names_to = "antibiotic",
+    values_to = "MIC",
+    cols = ends_with("in")
+  ) %>% 
+  arrange(MIC) %>% 
+  group_by(bacteria) %>% 
+  slice(1) %>% 
+  ggplot(aes(x = bacteria, y = MIC, fill = antibiotic)) +
+  geom_col() +
+  coord_flip()
 ```
 
 #### Visual 5 (Some variables)
@@ -114,7 +149,17 @@ In this visual you may show a *subset* of the variables (`penicillin`, `streptom
 Note that your visual must be *qualitatively different* from *all* of your other visuals.
 
 ```{r q1.5}
-# WRITE YOUR CODE HERE
+df_antibiotics %>% 
+  pivot_longer(
+    names_to = "antibiotic",
+    values_to = "MIC",
+    cols = ends_with("in")
+  ) %>% 
+  arrange(MIC) %>% 
+  group_by(bacteria) %>% 
+  slice(1) %>% 
+  ggplot(aes(x = antibiotic, fill = gram)) +
+  geom_bar()
 ```
 
 ### __q2__ Assess your visuals
@@ -130,12 +175,17 @@ There are **two questions** below; use your five visuals to help answer both Gui
 > How do the three antibiotics vary in their effectiveness against bacteria of different genera and Gram stain?
 
 *Observations*
+
 - What is your response to the question above?
-  - (Write your response here)
+  - Streptomycin has the lowest IQR for MIC of the three antibiotics options and
+  varies less from bacteria to bacteria. However, Neomycin and Penicillin have
+  some of the lowest MIC values even if their effectiveness varies more than that
+  of Streptomycin, with Neomycin having the lowest median MIC.
+  - Neomycin outperforms the other two antibiotics for 10 out of 16 bacteria.
 - Which of your visuals above (1 through 5) is **most effective** at helping to answer this question?
-  - (Write your response here)
+  - Visual 1 was the most helpful for this question.
 - Why?
-  - (Write your response here)
+  - Visual 1 has distributions of effectiveness by antibiotics type.
 
 #### Guiding Question 2
 
@@ -144,12 +194,16 @@ In 1974 *Diplococcus pneumoniae* was renamed *Streptococcus pneumoniae*, and in 
 > Why was *Diplococcus pneumoniae* was renamed *Streptococcus pneumoniae*?
 
 *Observations*
+
 - What is your response to the question above?
-  - (Write your response here)
+  - This is likely because Streptococcus pneumoniae has a very high MIC with
+  Streptomycin (on the order of 10^1), a quality shared by most Streptococcus
+  bacteria.
 - Which of your visuals above (1 through 5) is **most effective** at helping to answer this question?
-  - (Write your response here)
+  - Visual 2 was most helpful.
 - Why?
-  - (Write your response here)
+  - This is because this visual shows the individual MIC values for each
+  bacteria type by name for each antibiotic.
 
 
 # References

@@ -35,8 +35,8 @@ library(gapminder)
 ## TODO: Fix the following code
 gapminder %>%
   filter(continent == "Asia") %>%
-  ggplot(aes(year, lifeExp)) +
-  geom_point()
+  ggplot(aes(year, lifeExp)) + 
+  geom_line(aes(color = country))
 ```
 
 ### __q2__ A line plot makes *a certain assumption* about the underlying data. What assumption is this? How does that assumption relate to the following graph? Put differently, why is the use of `geom_line` a bad idea for the following dataset?
@@ -51,7 +51,10 @@ mpg %>%
 
 **Observations**:
 - What does a line plot assume about the data?
+  - This assumes that the data on the x axis are continuous and that there is
+  only one datapoint per x value.
 - How does the `mpg` dataset violate this assumption?
+  - There are multiple highway values for each display value.
 
 ### __q3__ The following graph shows both the raw data and a smoothed version. Describe the trends that you can see in the different curves.
 
@@ -66,7 +69,11 @@ economics %>%
 
 **Observations**:
 - What can you tell based on the `Raw` data?
+  - I can see finer details in the trendline like oscilations in unemployment rates
+  throughout each decade.
 - What can you tell based on the `Smoothed` data?
+  - I can see a general trend towards a higher unemployment rate over the last
+  few decades.
 
 <!-- include-exit-ticket -->
 # Exit Ticket
