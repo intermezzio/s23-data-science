@@ -40,6 +40,7 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 ```{r setup}
 library(tidyverse)
 library(ggrepel)
+library(scales)
 ```
 
 *Background*: The data[1] we study in this challenge report the [*minimum inhibitory concentration*](https://en.wikipedia.org/wiki/Minimum_inhibitory_concentration) (MIC) of three drugs for different bacteria. The smaller the MIC for a given drug and bacteria pair, the more practical the drug is for treating that particular bacteria. An MIC value of *at most* 0.1 is considered necessary for treating human patients.
@@ -80,9 +81,12 @@ df_antibiotics %>%
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
   ggplot(aes(x = antibiotic, y = MIC)) +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) + 
-  geom_point(aes(color = gram)) +
+  geom_point(aes(color = bacteria_gram)) +
   scale_y_continuous(trans='log10')
 ```
 
@@ -92,6 +96,17 @@ In this visual you must show *all three* effectiveness values for *all 16 bacter
 
 Note that your visual must be *qualitatively different* from *all* of your other visuals.
 
+```{r}
+log_tenth <- trans_new(
+  name = "log10_0.1",
+  transform = (\(x) 1 + log10(x)),
+  inverse = (\(x) 10 ^ (x - 1)),
+  log_breaks(base = 10),
+  domain = c(1e-100, Inf)
+)
+```
+
+
 ```{r q1.2}
 df_antibiotics %>% 
   pivot_longer(
@@ -99,9 +114,12 @@ df_antibiotics %>%
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
-  ggplot(aes(x = bacteria, y = MIC, fill = gram)) +
-  geom_col(aes(), position = "stack") +
-  scale_y_continuous(trans='log10') +
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
+  ggplot(aes(x = bacteria_gram, y = MIC_adj)) +
+  geom_col(position = "stack") +
+  scale_y_continuous(trans=log_tenth) +
   coord_flip() +
   facet_wrap(~antibiotic)
 ```
@@ -139,6 +157,7 @@ df_antibiotics %>%
   slice(1) %>% 
   ggplot(aes(x = bacteria, y = MIC, fill = antibiotic)) +
   geom_col() +
+  scale_y_continuous(trans=log_tenth) +
   coord_flip()
 ```
 
@@ -155,10 +174,13 @@ df_antibiotics %>%
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
   arrange(MIC) %>% 
   group_by(bacteria) %>% 
   slice(1) %>% 
-  ggplot(aes(x = antibiotic, fill = gram)) +
+  ggplot(aes(x = antibiotic, fill = bacteria_gram)) +
   geom_bar()
 ```
 

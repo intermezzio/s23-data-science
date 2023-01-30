@@ -1,7 +1,7 @@
 ---
 title: "COVID-19"
-author: "(Your name here)"
-date: 2020-
+author: "Andrew Mascillaro"
+date: 2023-01-24
 output:
   github_document:
     toc: true
@@ -36,7 +36,7 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 
 ```{r setup}
 library(tidyverse)
-
+library(stringr)
 ```
 
 *Background*: [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is the disease caused by the virus SARS-CoV-2. In 2020 it became a global pandemic, leading to huge loss of life and tremendous disruption to society. The New York Times (as of writing) publishes up-to-date data on the progression of the pandemic across the United States---we will study these data in this challenge.
@@ -77,8 +77,17 @@ That's the high-level view; now let's dig into the details.
 *Hint*: You will need to use the `skip` keyword when loading these data!
 
 ```{r q1-task}
-## TASK: Load the census bureau data with the following tibble name.
-df_pop <- NA
+filename <- "./data/ACSDT5Y2018.B01003-Data.csv"
+
+## Load the data
+df_pop <- read_csv(filename, skip = 1,
+                   col_select = c(id = "Geography",
+                                  county_name = "Geographic Area Name",
+                                  population = "Estimate!!Total",
+                                  error = "Margin of Error!!Total"),
+                   col_types = "ccdd", na = "*****") %>% 
+  slice(-1)
+df_pop
 ```
 
 *Note*: You can find information on 1-year, 3-year, and 5-year estimates [here](https://www.census.gov/programs-surveys/acs/guidance/estimates.html). The punchline is that 5-year estimates are more reliable but less current.
@@ -94,7 +103,7 @@ The New York Times is publishing up-to-date data on COVID-19 on [GitHub](https:/
 
 ```{r q2-task}
 ## TASK: Find the URL for the NYT covid-19 county-level data
-url_counties <- NA_character_
+url_counties <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties-2020.csv"
 ```
 
 Once you have the url, the following code will download a local copy of the data, then load the data into R.
@@ -135,7 +144,20 @@ To join these datasets, we'll need to use [FIPS county codes](https://en.wikiped
 
 ```{r q3-task}
 ## TASK: Create a `fips` column by extracting the county code
-df_q3 <- NA
+df_q3 <- df_pop %>% 
+  mutate(
+    fips = str_sub(id, -5),
+    # subregion = county_name %>% 
+    #   str_extract(., "[\\w|\\s]+,") %>% 
+    #   str_remove(., " County,") %>% 
+    #   str_to_lower(),
+    # state = county_name %>% 
+    #   str_extract(., ", [\\w|\\s]+") %>% 
+    #   str_remove(., ", ") %>% 
+    #   str_to_lower(),
+    
+  )
+df_q3 %>% head()
 ```
 
 Use the following test to check your answer.
@@ -145,7 +167,7 @@ Use the following test to check your answer.
 ## Check known county
 assertthat::assert_that(
               (df_q3 %>%
-              filter(str_detect(`Geographic Area Name`, "Autauga County")) %>%
+              filter(str_detect(county_name, "Autauga County")) %>%
               pull(fips)) == "01001"
             )
 print("Very good!")
@@ -155,7 +177,8 @@ print("Very good!")
 
 ```{r q4-task}
 ## TASK: Join df_covid and df_q3 by fips.
-df_q4 <- NA
+df_q4 <- df_q3 %>% 
+  left_join(df_covid, by = "fips")
 ```
 
 For convenience, I down-select some columns and produce more convenient column
@@ -165,14 +188,20 @@ names.
 ## NOTE: No need to change; run this to produce a more convenient tibble
 df_data <-
   df_q4 %>%
+  mutate(
+    region = state %>% str_to_lower(),
+    subregion = county %>% str_to_lower()
+  ) %>% 
   select(
     date,
     county,
     state,
+    region,
+    subregion,
     fips,
     cases,
     deaths,
-    population = `Estimate!!Total`
+    population
   )
 ```
 
@@ -188,8 +217,11 @@ Now that we've done the hard work of loading and wrangling the data, we can fina
 
 ```{r q5-task}
 ## TASK: Normalize cases and deaths
-df_normalized <-
-  df_data
+df_normalized <- df_data %>% 
+  mutate(
+    cases_per100k = 100000 * cases / population,
+    deaths_per100k = 100000 * deaths / population
+  )
 ```
 
 You may use the following test to check your work.
@@ -236,20 +268,52 @@ Before turning you loose, let's complete a couple guided EDA tasks.
 ### __q6__ Compute the mean and standard deviation for `cases_per100k` and `deaths_per100k`.
 
 ```{r q6-task}
-## TASK: Compute mean and sd for cases_per100k and deaths_per100k
+df_summative <- df_normalized %>% 
+  group_by(date) %>% 
+  drop_na(cases_per100k, deaths_per100k) %>% 
+  summarize(
+    mean_cases_per100k = mean(cases_per100k),
+    sd_cases_per100k = sd(cases_per100k),
+    mean_deaths_per100k = mean(deaths_per100k),
+    sd_deaths_per100k = sd(deaths_per100k)
+  )
+df_summative %>% slice(300)
 ```
+
+*Note*:
+
+- It doesn't make sense to average cases across different dates for this
+dataset, so mean and standard deviation are calculated for each day
+individually.
 
 ### __q7__ Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of `deaths_per100k`. Report the population of each county along with the per-100,000 counts. Compare the counts against the mean values you found in q6. Note any observations.
 
 ```{r q7-task}
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
+sorted_cases <- df_normalized %>% 
+  group_by(fips) %>% 
+  summarize(max_cases_per100k = max(cases_per100k)) %>% 
+  arrange(desc(max_cases_per100k))
+top_cases <- sorted_cases %>% 
+  slice(1:10)
+top_cases
 
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
+sorted_deaths <- df_normalized %>% 
+  group_by(fips) %>% 
+  summarize(max_deaths_per100k = max(deaths_per100k)) %>% 
+  arrange(desc(max_deaths_per100k))
+top_deaths <- sorted_deaths %>% 
+  slice(1:10)
+top_deaths
 ```
 
 **Observations**:
 
-- (Note your observations here!)
+- The counties with the maximum cases per 100k have about 10x more cases than
+the average county.
+- The counties with the maximum deaths per 100k have more than 10x more deaths
+than the average county.
 
 ## Self-directed EDA
 <!-- ------------------------- -->
@@ -267,6 +331,110 @@ Before turning you loose, let's complete a couple guided EDA tasks.
 - Your own idea!
 
 **DO YOUR OWN ANALYSIS HERE**
+
+```{r}
+df_normalized %>%
+  semi_join(top_cases, by = "fips") %>% 
+  ggplot(aes(x = date, y = cases_per100k, color = fct_reorder2(county, date, cases_per100k))) +
+  scale_color_discrete(name = "County") +
+  geom_line()
+```
+```{r}
+sorted_cases %>%
+  inner_join(
+    sorted_deaths,
+    by = "fips"
+  ) %>% 
+  left_join(df_q3, by = "fips") %>% 
+  ggplot(aes(x = max_deaths_per100k, y = max_cases_per100k, color = population)) +
+  scale_color_continuous(type = "viridis", trans = "log") +
+  geom_point() +
+  geom_smooth() +
+  scale_x_continuous(trans = "log") +
+  scale_y_continuous(trans = "log")
+```
+```{r}
+sorted_deaths %>%
+  left_join(df_q3, by = "fips") %>% 
+  ggplot(aes(x = max_deaths_per100k)) +
+  scale_color_continuous(type = "viridis", trans = "log") +
+  geom_histogram() +
+  scale_x_continuous(trans = "log")
+```
+```{r}
+sorted_cases %>%
+  left_join(df_q3, by = "fips") %>% 
+  ggplot(aes(x = max_cases_per100k)) +
+  scale_color_continuous(type = "viridis", trans = "log") +
+  geom_histogram() +
+  scale_x_continuous(trans = "log")
+```
+```{r}
+us_counties <- map_data("county")
+sorted_deaths %>%
+  left_join(df_q3, by = "fips") %>% 
+  ggplot(aes(x = max_deaths_per100k)) +
+  scale_color_continuous(type = "viridis", trans = "log") +
+  geom_histogram() +
+  scale_x_continuous(trans = "log")
+```
+
+```{r}
+mapped_cases_and_deaths <- sorted_cases %>%
+  inner_join(
+    sorted_deaths,
+    by = "fips"
+  ) %>% 
+  left_join(df_q3, by = "fips") %>%
+  mutate(
+    subregion = county_name %>%
+      str_extract(., "[\\w|\\s]+,") %>%
+      str_remove(., " County,") %>%
+      str_to_lower(),
+    region = county_name %>%
+      str_extract(., ", [\\w|\\s]+") %>%
+      str_remove(., ", ") %>%
+      str_to_lower()
+  ) %>% 
+  right_join(
+    map_data("county"),
+    by = "subregion"
+  )
+```
+
+```{r}
+mapped_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = max_deaths_per100k)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log") +
+  theme(legend.position="bottom",
+    axis.line=element_blank(),
+    axis.text=element_blank(),
+    axis.ticks=element_blank(),
+    axis.title=element_blank(),
+    panel.background=element_blank(),
+    panel.border=element_blank(),
+    panel.grid=element_blank()
+  )
+```
+```{r}
+mapped_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = max_cases_per100k)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log") +
+  theme(legend.position="bottom",
+    axis.line=element_blank(),
+    axis.text=element_blank(),
+    axis.ticks=element_blank(),
+    axis.title=element_blank(),
+    panel.background=element_blank(),
+    panel.border=element_blank(),
+    panel.grid=element_blank()
+  )
+```
+
 
 ### Aside: Some visualization tricks
 <!-- ------------------------- -->
@@ -303,6 +471,7 @@ df_normalized %>%
 <!-- ------------------------- -->
 
 The NYT repo documents some [geographic exceptions](https://github.com/nytimes/covid-19-data#geographic-exceptions); the data for New York, Kings, Queens, Bronx and Richmond counties are consolidated under "New York City" *without* a fips code. Thus the normalized counts in `df_normalized` are `NA`. To fix this, you would need to merge the population data from the New York City counties, and manually normalize the data.
+
 
 
 # Notes
