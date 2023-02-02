@@ -150,19 +150,25 @@ df_titanic %>% summarize(total = sum(n))
 *Note*: There are many ways to do this.
 
 ``` r
-df_titanic %>% 
-  filter(Survived == "Yes") %>% 
-  add_count(Class, Sex, wt = n, name = "true_count") %>% # so that adult + child values are added
-  ggplot(aes(x = Class, y = Sex)) +
-  geom_point(aes(size = true_count))
+# df_titanic %>% 
+#   filter(Survived == "Yes") %>% 
+#   add_count(Class, Sex, wt = n, name = "true_count") %>% # so that adult + child values are added
+#   ggplot(aes(x = Class, y = Sex)) +
+#   geom_point(aes(size = true_count))
+df_titanic %>%
+  filter(Survived == "Yes") %>%
+  ggplot(aes(Class, n, fill = Sex)) +
+  geom_col(position = "dodge")
 ```
 
 ![](c01-titanic-assignment_files/figure-gfm/q3-task-1.png)<!-- -->
 
 **Observations**:
 
-- Mostly male crew members survived, followed by female first class
-  members.
+- The largest gender-class group of survivors is male crew members.
+- In each class from first to third class, more females than males
+  survived, although the discrepancy was more apparent in first and
+  second class.
 
 # Deeper Look
 
@@ -250,9 +256,14 @@ df_prop %>%
 
 - There were very few children reported but the first class ones all
   seem to have survived.
+- There were no child crew members.
+- Among adults, women had a higher chance of survival, but the numbers
+  are more similar among children
 - If you saw something *fishy* in q4 above, use your new plot to explain
   the fishy-ness.
-  - Separating ages prevented ggplot from adding the proportions.
+  - When age was not accounted for, survival percentages across age
+    groups were aggregated via a sum instead of a weighted average,
+    making the survival rates appear larger than they really were.
 
 # Notes
 

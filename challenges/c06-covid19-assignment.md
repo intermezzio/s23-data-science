@@ -700,6 +700,7 @@ mapped_cases_and_deaths <- sorted_cases %>%
     subregion = county_name %>%
       str_extract(., "[\\w|\\s]+,") %>%
       str_remove(., " County,") %>%
+      str_remove(., ",") %>%
       str_to_lower(),
     region = county_name %>%
       str_extract(., ", [\\w|\\s]+") %>%
@@ -718,7 +719,7 @@ mapped_cases_and_deaths %>%
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="bottom",
+  theme(legend.position="right",
     axis.line=element_blank(),
     axis.text=element_blank(),
     axis.ticks=element_blank(),
@@ -742,7 +743,7 @@ mapped_cases_and_deaths %>%
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="bottom",
+  theme(legend.position="right",
     axis.line=element_blank(),
     axis.text=element_blank(),
     axis.ticks=element_blank(),
