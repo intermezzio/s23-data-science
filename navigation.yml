@@ -1,0 +1,9 @@
+- name: Home
+  link: /
+- name: Challenges
+  link: /challenges/
+  dropdown: 
+    - name: Challenge 0
+      link: /challenges/c00-diamonds-assignment
+    - name: Challenge 1
+      link: /challenges/c01-titanic-assignment
