@@ -1,3 +1,9 @@
 markdown: kramdown
 # With GitHub Pages Gem
 remote_theme: chrisrhymes/bulma-clean-theme
+
+title: Spring 2023 Data Science Coursework
+tagline: Coursework
+
+plugins:
+  - jekyll-sitemap
