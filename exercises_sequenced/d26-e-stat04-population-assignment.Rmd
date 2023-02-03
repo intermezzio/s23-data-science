@@ -218,7 +218,7 @@ df_samp_unif <-
     1:n_samples,
     function(id) {
       tibble(
-        Z = rnorm(n_observations),
+        Z = runif(n_observations),
         id = id
       )
     }
@@ -239,9 +239,9 @@ df_samp_unif %>%
 **Observations**:
 
 - (Describe the shape of the sampling distribution)
-- The sampling distribution is concentrated around the mean of `0.5`.
-- The sampling distribution stretches from `0` to `1`.
-- The sampling distribution looks roughly normal in shape
+- The sampling distribution has a mean of about 0.5
+- The distribution looks like an isosceles triangle from 0 to 1 but I could be
+convinced that it's normal
 
 ## Intermediate conclusion
 <!-- ------------------------- -->
@@ -263,8 +263,8 @@ The standard error is a convenient way to summarize the accuracy of an estimatio
 
 ```{r q2-task}
 ## TASK: Compute the standard error
-se_q2.1 <- NA_real_ # Population: norm(mean = 2, sd = 4), samples: n = 16
-se_q2.2 <- NA_real_ # Population: norm(mean =-2, sd = 8), samples: n = 32
+se_q2.1 <- 1 # Population: norm(mean = 2, sd = 4), samples: n = 16
+se_q2.2 <- 8 / sqrt(32) # Population: norm(mean =-2, sd = 8), samples: n = 32
 ```
 
 Use the following tests to check your work.
@@ -279,6 +279,9 @@ print("Nice!")
 **Observations**:
 
 - Which setting---q2.1 or q2.2---will tend to produce more accurate estimates? Why?
+- Setting q2.1 will have more accurate estimates because the decrease in
+standard deviation will make the samples more precise in measuring the
+population.
 
 Two notes:
 
@@ -300,7 +303,9 @@ set.seed(101)
 n_sample <- 20
 z_sample <- rnorm(n = n_sample, mean = 2, sd = 4)
 ## TASK: Compute the sample standard error for `z_sample`
-se_sample <- NA_real_
+se_sample <- sd(z_sample) / sqrt(n_sample)
+se_sample
+se_q2.1
 ```
 
 Use the following tests to check your work.
@@ -319,7 +324,10 @@ print("Well done!")
 **Observations**:
 
 - How close is your estimate `se_sample` to the true `se_q2.1`?
-- What accounts for the difference between these values?
+- The se_sample standard error is about 20% lower than the population's
+standard error.
+- This heavily relies on the standard deviation of the sample, which can
+vary.
 
 ## Fast Summary
 <!-- -------------------------------------------------- -->

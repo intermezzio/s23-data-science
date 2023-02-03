@@ -77,8 +77,8 @@ mpg %>%
 
 ```{r q1-task}
 ## TODO: Filter down to trans that are manual
-df_q1 <-
-  mpg
+df_q1 <- mpg %>% 
+  filter(str_detect(trans, "ual"))
 df_q1 %>% glimpse()
 ```
 
@@ -186,12 +186,14 @@ str_extract(
 
 ### __q3__ Match alphabet characters
 
-Notice that the `trans` column of `mpg` has many entries of the form `auto|manual\\([[:alpha:]]\\d\\)`; use `str_mutate()` to create a new column `tmp` with just the code inside the parentheses extracting `[[:alpha:]]\\d`.
+Notice that the `trans` column of `mpg` has many entries of the form `auto|manual\\([[:alpha:]]\\d\\)`; use `str_extract()` to create a new column `tmp` with just the code inside the parentheses extracting `[[:alpha:]]\\d`.
 
 ```{r q3-task}
 ## TASK: Mutate `trans` to extract
-df_q3 <-
-  mpg
+df_q3 <- mpg %>% 
+  mutate(
+    tmp = str_extract(trans, "[[:alpha:]]\\d")
+  )
 df_q3 %>%
   select(tmp)
 ```
@@ -242,7 +244,7 @@ points <- c(
 q4 <-
   str_match(
     points,
-    pattern = ".*"
+    pattern = "^x=(\\d+), y=(\\d+)"
   )
 
 q4
@@ -285,8 +287,8 @@ string_quantiles %>%
 
 ```{r q5-task}
 ## TODO: Mutate trans to remove the parentheses and all characters inside
-df_q5 <-
-  mpg
+df_q5 <- mpg %>% 
+  mutate(trans = str_remove(trans, "\\(.*\\)"))
 df_q5
 ```
 
@@ -331,14 +333,20 @@ As described in the RegexOne tutorial, you can use *capture groups* in parenthes
 ```{r q6-task}
 ## TASK: Tidy `alloys`
 df_q6 <- alloys
-df_q6
+df_q6 <- df_q6 %>% 
+  pivot_longer(
+    cols = starts_with("E") | starts_with("mu"),
+    names_sep = -2,
+    names_to = c(".value", "angle"),
+    names_transform = c(angle = as.integer)
+  )
 ```
 
 Use the following test to check your work.
 
 ```{r q6-tests}
-## NOTE: No need to change this!
-assertthat::assert_that(dim(df_q6)[1] == 16)
+## NOTE: No need to change this (unless you really want to...)!
+assertthat::assert_that(dim(df_q6)[1] == 8)
 assertthat::assert_that(dim(df_q6)[2] == 5)
 print("Awesome!")
 ```

@@ -147,8 +147,17 @@ diamonds %>%
 **Classify**:
 AAA, ABT, or DHY?
 
+DHY
+
 **Justify**
 Write your justification here!
+
+This graph shows that diamonds of higher carats generally cost more.
+However, it shows that for less than one carat, the nicer diamonds actually
+cost less. Many of these facts and observations are not inherently useful
+because the \`\`fine" distinction between both carat groups and cut quality
+shows a lot of data but not a lot of conclusions can be drawn from them because
+the large groups (like 0-1 carat) allow for confounding variables.
 
 ### __q2__ Identify the point on the narrative spectrum, and justify your answer.
 
@@ -172,8 +181,15 @@ diamonds %>%
 **Classify**:
 AAA, ABT, or DHY?
 
+ABT
+
 **Justify**
 Write your justification here!
+
+Here, we see a few important correlations (like carat to price and cut to price
+at a given carat), and any irregularities can be discussed further, like how
+fair cuts might cost more for very low or high numbers of carats. There is a lot
+of information but it is digestible and not cluttered.
 
 ### __q3__ Identify the point on the narrative spectrum, and justify your answer.
 
@@ -195,8 +211,14 @@ diamonds %>%
 **Classify**:
 AAA, ABT, or DHY?
 
+AAA
+
 **Justify**
 Write your justification here!
+
+This set of plots shows a lot of subplots with good data, like comparisons
+across different diamond qualities. However, the data are not converted into
+anything particularly meaningful or interesting.
 
 ### __q4__ Turn in all your answers via google forms. [Link](https://forms.gle/kHuT5oufUQA7jRWG8)
 

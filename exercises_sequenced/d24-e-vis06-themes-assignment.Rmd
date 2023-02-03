@@ -16,7 +16,6 @@ reading: 0
 ```{r setup, include=FALSE}
 library(tidyverse)
 # knitr options
-library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -25,7 +24,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r q1-task}
 mpg %>%
   ggplot(aes(displ, hwy, color = class)) +
-  geom_point()
+  geom_point() +
+  theme_void() +
+  guides(size = "none", color = "none")
 ```
 
 
@@ -34,7 +35,7 @@ When I make presentation-quality figures, I often start with the following stub 
 ```{r zdr-theme}
 ## NOTE: No need to edit; feel free to re-use this code!
 theme_common <- function() {
-  theme_minimal() %+replace%
+  theme_minimal(base_family = "Comic Sans MS") %+replace%
   theme(
     axis.text.x = element_text(size = 12),
     axis.text.y = element_text(size = 12),
@@ -72,12 +73,17 @@ mpg %>%
   labs(
     x = "Engine Displacement (L)",
     y = "Highway Fuel Economy (mpg)"
-  )
+  ) +
+  theme_common()
 ```
 
 **Observations**:
 
 - What changed about the graph when you added `theme_common()`?
+- The graph itself has a white backdrop.
+- The gridlines are more pronounced.
+- The axes do no have lines (although that may be because this graph doesn't
+cross zero)
 
 Calling `theme_common()`, along with settings `labs()` and making some smart choices about geoms and annotations is often all you need to make a *really high-quality graph*.
 
@@ -90,7 +96,10 @@ mpg %>%
   ggplot(aes(displ, hwy, color = class)) +
   geom_point() +
   theme(
-    axis.text.x = element_text(size = 32)
+    axis.text.x = element_text(size = 32, family = "Comic Sans MS"),
+    aspect.ratio = 2,
+    panel.background = element_rect(fill = "#ff0f7f"),
+    
   )
 ```
 
