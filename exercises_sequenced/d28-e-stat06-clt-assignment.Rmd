@@ -189,9 +189,16 @@ Some observations to note:
 ```{r q1-task}
 ## TASK: Estimate a 99% confidence interval with the sample below
 set.seed(101)
+q99 <- qnorm( 1 - (1 - 0.99) / 2 )
 z_q1 <- rnorm(n = 100, mean = 1, sd = 2)
-lo_q1 <- NA_real_
-hi_q1 <- NA_real_
+z_q1_mean <- mean(z_q1)
+z_q1_sd <- sd(z_q1)
+z_q1_se <- z_q1_sd / sqrt(length(z_q1))
+lo_q1 <- z_q1_mean - q99 * z_q1_se
+hi_q1 <- z_q1_mean + q99 * z_q1_se
+lo_q1
+hi_q1
+q95 * z_q1_se
 ```
 
 Use the following tests to check your answer.

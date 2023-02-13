@@ -101,16 +101,31 @@ Remember in `e-stat02-probability` we learned how to estimate probabilities as t
 
 ```{r q1-task}
 ## TASK: Choose a sample size and generate samples
-n <- NA_real_ # Choose a sample size
-df_q1 <- NA # Generate the data
+set.seed(strtoi("wowow", base = 36))
+n <- 10000 # Choose a sample size
+df_q1 <- tibble(
+  x = runif(n, 0, 1),
+  y = runif(n, 0,)
+) # Generate the data
 ```
 
 ### __q2__ Using your data in `df_q1`, estimate $\pi$.
 
 ```{r q2-task}
 ## TASK: Estimate pi using your data from q1
-pi_est <- NA_real_
-pi_est
+df_q2 <- df_q1 %>%
+  mutate(
+    in_circ = (x ^ 2 + y ^ 2) < 1
+  ) %>%
+  summarize(
+    in_circ_mean = mean(in_circ),
+    in_circ_sd = sd(in_circ),
+    n = nrow(df_q1),
+    in_circ_se = in_circ_sd / sqrt(n),
+    pi_est = in_circ_mean * 4
+  )
+df_q2
+pi_est <- df_q2$in_circ_mean * 4
 ```
 
 # Quantifying Uncertainty
@@ -121,16 +136,29 @@ You now have an estimate of $\pi$, but how trustworthy is that estimate? In `e-s
 ### __q3__ Using a CLT approximation, produce a confidence interval for your estimate of $\pi$. Make sure you specify your confidence level. Does your interval include the true value of $\pi$? Was your chosen sample size sufficiently large so as to produce a trustworthy answer?
 
 ```{r q3-task}
+q99 <- qnorm( 1 - (1 - 0.99) / 2 )
+lo_pi <- (df_q2$in_circ_mean - q99 * df_q2$in_circ_se) * 4
+hi_pi <- (df_q2$in_circ_mean + q99 * df_q2$in_circ_se) * 4
+lo_pi
+hi_pi
 ```
 
 **Observations**:
 
 - Does your interval include the true value of $\pi$?
-  - (Your response here)
+  - My interval includes the true value of $\pi$.
 - What confidence level did you choose?
-  - (Your response here)
+  - I chose a 99% confidence level
 - Was your sample size $n$ large enough? Why do you say that?
-  - (Your response here)
+  - It appears that a sample size of 10,000 was large enough
+  for recreational purposes of approximating $\pi$.
+  - nobody actually depends on my estimation of the number, and the
+  only goals for the estimate are to be within the confidence
+  interval and for the confidence interval to be small enough for me
+  to qualitatively think, \`\`wowow, this estimate of $\pi$ looks
+  cool"
+  - In this case, the confidence interval is less than 0.1, and the
+  true value of $\pi$ was within this interval
 
 # References
 <!-- -------------------------------------------------- -->
