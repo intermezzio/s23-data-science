@@ -54,6 +54,9 @@ df_q1 %>% glimpse
 **Observations**:
 
 - Based on reading the Excel sheet, why do you think the columns are so weird?
+- The columns are weird because there are a lot of empty / sparse rows in the
+first few actual rows of the spreadsheet that don't contain any data or columns
+yet
 
 Most `read_` functions have a *skip* argument you can use to skip over the first few lines. Use this argument in the next task to deal with the top of the Excel sheet.
 
@@ -65,7 +68,7 @@ Open the target Excel sheet (located at `./data/undoc.xlsx`) and find which line
 ## TODO:
 df_q2 <- read_excel(
   filename,
-  skip = 1
+  skip = 6
 )
 df_q2 %>% glimpse
 ```
@@ -127,7 +130,8 @@ col_names_undoc <-
 
 ## TASK: Use the arguments `skip`, `col_names`, and `col_types`
 df_q3 <-
-  read_excel(filename, sheet = 1)
+  read_excel(filename, sheet = 1, skip=7, col_names = col_names_undoc,
+             col_types = "guess")
 ```
 
 Use the following test to check your work.
