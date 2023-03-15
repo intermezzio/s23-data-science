@@ -37,7 +37,7 @@ Use the namespace `::` operator to use the correct `select()` function.
 
 ```{r q0-task}
 diamonds %>%
-  select(carat, cut) %>%
+  dplyr::select(carat, cut) %>%
   glimpse()
 ```
 
@@ -79,8 +79,8 @@ df_est_norm
 
 ```{r q1-task}
 ## TASK: Compute the sample mean and sd of `df_data_norm %>% pull(x)`
-mean_est <- NA_real_
-sd_est <- NA_real_
+mean_est <- mean(df_data_norm$x)
+sd_est <- sd(df_data_norm$x)
 mean_est
 sd_est
 ```
@@ -88,6 +88,9 @@ sd_est
 **Observations**:
 
 - How do the values in `df_est_norm` compare with `mean_est` and `sd_est`?
+- The mean is exactly the same but the standard deviation is slightly different,
+my guess is it uses a population standard deviation instead of a sample standard
+deviation
 
 Estimating parameters for a normal distribution is easy because it is parameterized in terms of the mean and standard deviation. The advantage of using `fitdistr()` is that it will allow us to work with a much wider selection of distribution models.
 
@@ -101,7 +104,10 @@ set.seed(101)
 df_data_weibull <- tibble(y = rweibull(50, shape = 2, scale = 4))
 
 ## TASK: Use the `fitdistr()` function to estimate parameters
-df_q2 <- NA
+df_q2 <- df_data_weibull %>% 
+  pull(y) %>% 
+  fitdistr(densfun="normal") %>% 
+  tidy()
 df_q2
 ```
 
@@ -116,7 +122,11 @@ Once we've fit a distribution, we can use the estimated parameters to approximat
 pr_true <- pweibull(q = 2, shape = 2, scale = 4)
 
 ## TASK: Extract the parameter estimates from df_q2 and estimate Pr[Y <= 2]
-pr_est <- NA_real_
+pr_est <- df_q2 %>% 
+  pull(y) %>% 
+  fitdistr(densfun="normal") %>% 
+  tidy() %>% 
+  
 
 pr_true
 pr_est
