@@ -3,77 +3,51 @@ COVID-19
 Andrew Mascillaro
 2023-01-24
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-- <a href="#the-big-picture" id="toc-the-big-picture">The Big Picture</a>
-- <a href="#get-the-data" id="toc-get-the-data">Get the Data</a>
-  - <a href="#navigating-the-census-bureau"
-    id="toc-navigating-the-census-bureau">Navigating the Census Bureau</a>
-    - <a
-      href="#q1-load-table-b01003-into-the-following-tibble-make-sure-the-column-names-are-id-geographic-area-name-estimatetotal-margin-of-errortotal"
-      id="toc-q1-load-table-b01003-into-the-following-tibble-make-sure-the-column-names-are-id-geographic-area-name-estimatetotal-margin-of-errortotal"><strong>q1</strong>
-      Load Table <code>B01003</code> into the following tibble. Make sure the
-      column names are
-      <code>id, Geographic Area Name, Estimate!!Total, Margin of Error!!Total</code>.</a>
-  - <a href="#automated-download-of-nyt-data"
-    id="toc-automated-download-of-nyt-data">Automated Download of NYT
-    Data</a>
-    - <a
-      href="#q2-visit-the-nyt-github-repo-and-find-the-url-for-the-raw-us-county-level-data-assign-that-url-as-a-string-to-the-variable-below"
-      id="toc-q2-visit-the-nyt-github-repo-and-find-the-url-for-the-raw-us-county-level-data-assign-that-url-as-a-string-to-the-variable-below"><strong>q2</strong>
-      Visit the NYT GitHub repo and find the URL for the <strong>raw</strong>
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Due Date](#due-date)
+- [The Big Picture](#the-big-picture)
+- [Get the Data](#get-the-data)
+  - [Navigating the Census Bureau](#navigating-the-census-bureau)
+    - [**q1** Load Table `B01003` into the following tibble. Make sure
+      the column names are
+      `id, Geographic Area Name, Estimate!!Total, Margin of Error!!Total`.](#q1-load-table-b01003-into-the-following-tibble-make-sure-the-column-names-are-id-geographic-area-name-estimatetotal-margin-of-errortotal)
+  - [Automated Download of NYT Data](#automated-download-of-nyt-data)
+    - [**q2** Visit the NYT GitHub repo and find the URL for the **raw**
       US County-level data. Assign that URL as a string to the variable
-      below.</a>
-- <a href="#join-the-data" id="toc-join-the-data">Join the Data</a>
-  - <a href="#q3-process-the-id-column-of-df_pop-to-create-a-fips-column"
-    id="toc-q3-process-the-id-column-of-df_pop-to-create-a-fips-column"><strong>q3</strong>
-    Process the <code>id</code> column of <code>df_pop</code> to create a
-    <code>fips</code> column.</a>
-  - <a
-    href="#q4-join-df_covid-with-df_q3-by-the-fips-column-use-the-proper-type-of-join-to-preserve-only-the-rows-in-df_covid"
-    id="toc-q4-join-df_covid-with-df_q3-by-the-fips-column-use-the-proper-type-of-join-to-preserve-only-the-rows-in-df_covid"><strong>q4</strong>
-    Join <code>df_covid</code> with <code>df_q3</code> by the
-    <code>fips</code> column. Use the proper type of join to preserve
-    <em>only</em> the rows in <code>df_covid</code>.</a>
-- <a href="#analyze" id="toc-analyze">Analyze</a>
-  - <a href="#normalize" id="toc-normalize">Normalize</a>
-    - <a
-      href="#q5-use-the-population-estimates-in-df_data-to-normalize-cases-and-deaths-to-produce-per-100000-counts-3-store-these-values-in-the-columns-cases_per100k-and-deaths_per100k"
-      id="toc-q5-use-the-population-estimates-in-df_data-to-normalize-cases-and-deaths-to-produce-per-100000-counts-3-store-these-values-in-the-columns-cases_per100k-and-deaths_per100k"><strong>q5</strong>
-      Use the <code>population</code> estimates in <code>df_data</code> to
-      normalize <code>cases</code> and <code>deaths</code> to produce per
-      100,000 counts [3]. Store these values in the columns
-      <code>cases_per100k</code> and <code>deaths_per100k</code>.</a>
-  - <a href="#guided-eda" id="toc-guided-eda">Guided EDA</a>
-    - <a
-      href="#q6-compute-the-mean-and-standard-deviation-for-cases_per100k-and-deaths_per100k"
-      id="toc-q6-compute-the-mean-and-standard-deviation-for-cases_per100k-and-deaths_per100k"><strong>q6</strong>
-      Compute the mean and standard deviation for <code>cases_per100k</code>
-      and <code>deaths_per100k</code>.</a>
-    - <a
-      href="#q7-find-the-top-10-counties-in-terms-of-cases_per100k-and-the-top-10-in-terms-of-deaths_per100k-report-the-population-of-each-county-along-with-the-per-100000-counts-compare-the-counts-against-the-mean-values-you-found-in-q6-note-any-observations"
-      id="toc-q7-find-the-top-10-counties-in-terms-of-cases_per100k-and-the-top-10-in-terms-of-deaths_per100k-report-the-population-of-each-county-along-with-the-per-100000-counts-compare-the-counts-against-the-mean-values-you-found-in-q6-note-any-observations"><strong>q7</strong>
-      Find the top 10 counties in terms of <code>cases_per100k</code>, and the
-      top 10 in terms of <code>deaths_per100k</code>. Report the population of
+      below.](#q2-visit-the-nyt-github-repo-and-find-the-url-for-the-raw-us-county-level-data-assign-that-url-as-a-string-to-the-variable-below)
+- [Join the Data](#join-the-data)
+  - [**q3** Process the `id` column of `df_pop` to create a `fips`
+    column.](#q3-process-the-id-column-of-df_pop-to-create-a-fips-column)
+  - [**q4** Join `df_covid` with `df_q3` by the `fips` column. Use the
+    proper type of join to preserve *only* the rows in
+    `df_covid`.](#q4-join-df_covid-with-df_q3-by-the-fips-column-use-the-proper-type-of-join-to-preserve-only-the-rows-in-df_covid)
+- [Analyze](#analyze)
+  - [Normalize](#normalize)
+    - [**q5** Use the `population` estimates in `df_data` to normalize
+      `cases` and `deaths` to produce per 100,000 counts \[3\]. Store
+      these values in the columns `cases_per100k` and
+      `deaths_per100k`.](#q5-use-the-population-estimates-in-df_data-to-normalize-cases-and-deaths-to-produce-per-100000-counts-3-store-these-values-in-the-columns-cases_per100k-and-deaths_per100k)
+  - [Guided EDA](#guided-eda)
+    - [**q6** Compute the mean and standard deviation for
+      `cases_per100k` and
+      `deaths_per100k`.](#q6-compute-the-mean-and-standard-deviation-for-cases_per100k-and-deaths_per100k)
+    - [**q7** Find the top 10 counties in terms of `cases_per100k`, and
+      the top 10 in terms of `deaths_per100k`. Report the population of
       each county along with the per-100,000 counts. Compare the counts
-      against the mean values you found in q6. Note any observations.</a>
-  - <a href="#self-directed-eda" id="toc-self-directed-eda">Self-directed
-    EDA</a>
-    - <a
-      href="#q8-drive-your-own-ship-youve-just-put-together-a-very-rich-dataset-you-now-get-to-explore-pick-your-own-direction-and-generate-at-least-one-punchline-figure-to-document-an-interesting-finding-i-give-a-couple-tips--ideas-below"
-      id="toc-q8-drive-your-own-ship-youve-just-put-together-a-very-rich-dataset-you-now-get-to-explore-pick-your-own-direction-and-generate-at-least-one-punchline-figure-to-document-an-interesting-finding-i-give-a-couple-tips--ideas-below"><strong>q8</strong>
-      Drive your own ship: You’ve just put together a very rich dataset; you
-      now get to explore! Pick your own direction and generate at least one
-      punchline figure to document an interesting finding. I give a couple
-      tips &amp; ideas below:</a>
-    - <a href="#ideas" id="toc-ideas">Ideas</a>
-    - <a href="#aside-some-visualization-tricks"
-      id="toc-aside-some-visualization-tricks">Aside: Some visualization
-      tricks</a>
-    - <a href="#geographic-exceptions"
-      id="toc-geographic-exceptions">Geographic exceptions</a>
-- <a href="#notes" id="toc-notes">Notes</a>
+      against the mean values you found in q6. Note any
+      observations.](#q7-find-the-top-10-counties-in-terms-of-cases_per100k-and-the-top-10-in-terms-of-deaths_per100k-report-the-population-of-each-county-along-with-the-per-100000-counts-compare-the-counts-against-the-mean-values-you-found-in-q6-note-any-observations)
+  - [Self-directed EDA](#self-directed-eda)
+    - [**q8** Drive your own ship: You’ve just put together a very rich
+      dataset; you now get to explore! Pick your own direction and
+      generate at least one punchline figure to document an interesting
+      finding. I give a couple tips & ideas
+      below:](#q8-drive-your-own-ship-youve-just-put-together-a-very-rich-dataset-you-now-get-to-explore-pick-your-own-direction-and-generate-at-least-one-punchline-figure-to-document-an-interesting-finding-i-give-a-couple-tips--ideas-below)
+    - [Ideas](#ideas)
+    - [Aside: Some visualization
+      tricks](#aside-some-visualization-tricks)
+    - [Geographic exceptions](#geographic-exceptions)
+- [Notes](#notes)
 
 *Purpose*: In this challenge, you’ll learn how to navigate the U.S.
 Census Bureau website, programmatically download data from the internet,
@@ -127,7 +101,12 @@ library(tidyverse)
 
 ``` r
 library(stringr)
+library(GGally)
 ```
+
+    ## Registered S3 method overwritten by 'GGally':
+    ##   method from   
+    ##   +.gg   ggplot2
 
 *Background*:
 [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is
@@ -690,7 +669,7 @@ sorted_deaths %>%
 ![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
-mapped_cases_and_deaths <- sorted_cases %>%
+cases_and_deaths <- sorted_cases %>%
   inner_join(
     sorted_deaths,
     by = "fips"
@@ -700,26 +679,104 @@ mapped_cases_and_deaths <- sorted_cases %>%
     subregion = county_name %>%
       str_extract(., "[\\w|\\s]+,") %>%
       str_remove(., " County,") %>%
+      str_remove(., " Parish,") %>%
       str_remove(., ",") %>%
       str_to_lower(),
     region = county_name %>%
       str_extract(., ", [\\w|\\s]+") %>%
       str_remove(., ", ") %>%
       str_to_lower()
-  ) %>% 
+  )
+mapped_cases_and_deaths <- cases_and_deaths %>% 
   right_join(
-    map_data("county"),
-    by = "subregion"
+    us_counties,
+    by = c("subregion","region")
   )
 ```
 
 ``` r
 mapped_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = max_deaths_per100k)) +
-  geom_polygon(color = "gray90", size = 0.1) +
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="right",
+  group_by(subregion, region, fips)
+```
+
+    ## # A tibble: 87,949 × 13
+    ## # Groups:   subregion, region, fips [3,076]
+    ##    fips  max_ca…¹ max_d…² id    count…³ popul…⁴ error subre…⁵ region  long   lat
+    ##    <chr>    <dbl>   <dbl> <chr> <chr>     <dbl> <dbl> <chr>   <chr>  <dbl> <dbl>
+    ##  1 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.1
+    ##  2 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
+    ##  3 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
+    ##  4 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
+    ##  5 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
+    ##  6 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.3
+    ##  7 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.3
+    ##  8 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.2
+    ##  9 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.2
+    ## 10 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.1
+    ## # … with 87,939 more rows, 2 more variables: group <dbl>, order <int>, and
+    ## #   abbreviated variable names ¹​max_cases_per100k, ²​max_deaths_per100k,
+    ## #   ³​county_name, ⁴​population, ⁵​subregion
+
+``` r
+summative_cases_and_deaths <- mapped_cases_and_deaths %>% 
+  group_by(subregion, region, fips) %>% 
+  summarise(
+    county_pop = mean(population),
+    county_max_cases_per100k = max(max_cases_per100k),
+    county_max_deaths_per100k = max(max_deaths_per100k)
+  ) %>%
+  ungroup() %>% 
+  # left_join(
+  #   mapped_cases_and_deaths,
+  #   by = "fips",
+  # ) %>% 
+  left_join(
+    us_counties,
+    by = c("subregion","region")
+  )
+```
+
+    ## `summarise()` has grouped output by 'subregion', 'region'. You can override
+    ## using the `.groups` argument.
+
+``` r
+# sanity checking that the population aggregation is
+# roughly similar to the actual USA population of
+# 330 million
+# assertthat::assert_that(
+#   between(
+#     sum(summative_cases_and_deaths$county_pop),
+#     250000000,
+#     400000000
+#   )
+# )
+
+facetable_cases_pop_deaths <- summative_cases_and_deaths %>% 
+  pivot_longer(
+    cols = starts_with("county_"),
+    names_to = "metric",
+    values_to = "people"
+  )
+facetable_cases_pop_deaths
+```
+
+    ## # A tibble: 263,847 × 9
+    ##    subregion region         fips   long   lat group order metric          people
+    ##    <chr>     <chr>          <chr> <dbl> <dbl> <dbl> <int> <chr>            <dbl>
+    ##  1 abbeville south carolina 45001 -82.2  34.4  2285 67181 county_pop      24657 
+    ##  2 abbeville south carolina 45001 -82.2  34.4  2285 67181 county_max_cas…  5171.
+    ##  3 abbeville south carolina 45001 -82.2  34.4  2285 67181 county_max_dea…   101.
+    ##  4 abbeville south carolina 45001 -82.3  34.4  2285 67182 county_pop      24657 
+    ##  5 abbeville south carolina 45001 -82.3  34.4  2285 67182 county_max_cas…  5171.
+    ##  6 abbeville south carolina 45001 -82.3  34.4  2285 67182 county_max_dea…   101.
+    ##  7 abbeville south carolina 45001 -82.3  34.3  2285 67183 county_pop      24657 
+    ##  8 abbeville south carolina 45001 -82.3  34.3  2285 67183 county_max_cas…  5171.
+    ##  9 abbeville south carolina 45001 -82.3  34.3  2285 67183 county_max_dea…   101.
+    ## 10 abbeville south carolina 45001 -82.3  34.3  2285 67184 county_pop      24657 
+    ## # … with 263,837 more rows
+
+``` r
+theme_maps <- theme(legend.position="right",
     axis.line=element_blank(),
     axis.text=element_blank(),
     axis.ticks=element_blank(),
@@ -728,6 +785,16 @@ mapped_cases_and_deaths %>%
     panel.border=element_blank(),
     panel.grid=element_blank()
   )
+```
+
+``` r
+facetable_cases_pop_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = people)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log") +
+  theme_maps +
+  facet_wrap(~metric, ncol = 1)
 ```
 
     ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
@@ -735,26 +802,185 @@ mapped_cases_and_deaths %>%
 
     ## Warning: Transformation introduced infinite values in discrete y-axis
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
-mapped_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = max_cases_per100k)) +
+summative_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = county_pop,
+             label)) +
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="right",
-    axis.line=element_blank(),
-    axis.text=element_blank(),
-    axis.ticks=element_blank(),
-    axis.title=element_blank(),
-    panel.background=element_blank(),
-    panel.border=element_blank(),
-    panel.grid=element_blank()
-  )
+  scale_fill_continuous(type = "viridis", trans = "log", name = "Population") +
+  theme_maps
 ```
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+summative_cases_and_deaths %>% 
+  ggpairs(
+    # aes(size = .0000001),
+    columns = 4:6,
+    columnLabels = c("Population", "Cases", "Deaths")
+  ) + 
+  scale_x_continuous(n.breaks = 3, trans = "log") +
+  scale_y_continuous(n.breaks = 4, trans = "log") +
+  
+  theme_gray()
+```
+
+    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
+    ## Removed 1807 rows containing missing values
+
+    ## Scale for x is already present.
+    ## Adding another scale for x, which will replace the existing scale.
+
+    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
+    ## Removed 1807 rows containing missing values
+
+    ## Scale for x is already present.
+    ## Adding another scale for x, which will replace the existing scale.
+
+    ## Warning in ggally_statistic(data = data, mapping = mapping, na.rm = na.rm, :
+    ## Removed 1807 rows containing missing values
+
+    ## Scale for x is already present.
+    ## Adding another scale for x, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+    ## Scale for y is already present.
+    ## Adding another scale for y, which will replace the existing scale.
+
+    ## Warning: Removed 1703 rows containing non-finite values (`stat_density()`).
+
+    ## Warning: Removed 1807 rows containing missing values (`geom_point()`).
+
+    ## Warning: Removed 1807 rows containing non-finite values (`stat_density()`).
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+    ## Warning: Removed 1807 rows containing missing values (`geom_point()`).
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+    ## Warning: Removed 1807 rows containing missing values (`geom_point()`).
+
+    ## Warning: Transformation introduced infinite values in continuous x-axis
+
+    ## Warning: Removed 3552 rows containing non-finite values (`stat_density()`).
+
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Part of this data sifting was figuring out how to parse county data from
+Louisiana, which often would show up as blank because it has parishes
+instead. To learn more about the data at hand, I filtered all Louisiana
+“county” names and checked them here so I could update the parser in the
+previous merge.
+
+``` r
+cases_and_deaths %>% 
+  filter(
+    region == "louisiana"
+  ) %>%
+  distinct(subregion)
+```
+
+    ## # A tibble: 64 × 1
+    ##    subregion     
+    ##    <chr>         
+    ##  1 east carroll  
+    ##  2 east feliciana
+    ##  3 madison       
+    ##  4 franklin      
+    ##  5 allen         
+    ##  6 caldwell      
+    ##  7 ouachita      
+    ##  8 bienville     
+    ##  9 jackson       
+    ## 10 pointe coupee 
+    ## # … with 54 more rows
+
+``` r
+us_counties %>% 
+  filter(
+    region == "louisiana"
+  ) %>%
+  distinct(subregion)
+```
+
+    ##              subregion
+    ## 1               acadia
+    ## 2                allen
+    ## 3            ascension
+    ## 4           assumption
+    ## 5            avoyelles
+    ## 6           beauregard
+    ## 7            bienville
+    ## 8              bossier
+    ## 9                caddo
+    ## 10           calcasieu
+    ## 11            caldwell
+    ## 12             cameron
+    ## 13           catahoula
+    ## 14           claiborne
+    ## 15           concordia
+    ## 16             de soto
+    ## 17    east baton rouge
+    ## 18        east carroll
+    ## 19      east feliciana
+    ## 20          evangeline
+    ## 21            franklin
+    ## 22               grant
+    ## 23              iberia
+    ## 24           iberville
+    ## 25             jackson
+    ## 26           jefferson
+    ## 27     jefferson davis
+    ## 28           lafayette
+    ## 29           lafourche
+    ## 30            la salle
+    ## 31             lincoln
+    ## 32          livingston
+    ## 33             madison
+    ## 34           morehouse
+    ## 35        natchitoches
+    ## 36             orleans
+    ## 37            ouachita
+    ## 38         plaquemines
+    ## 39       pointe coupee
+    ## 40             rapides
+    ## 41           red river
+    ## 42            richland
+    ## 43              sabine
+    ## 44          st bernard
+    ## 45          st charles
+    ## 46           st helena
+    ## 47            st james
+    ## 48 st john the baptist
+    ## 49           st landry
+    ## 50           st martin
+    ## 51             st mary
+    ## 52          st tammany
+    ## 53          tangipahoa
+    ## 54              tensas
+    ## 55          terrebonne
+    ## 56               union
+    ## 57           vermilion
+    ## 58              vernon
+    ## 59          washington
+    ## 60             webster
+    ## 61    west baton rouge
+    ## 62        west carroll
+    ## 63      west feliciana
+    ## 64                winn
 
 ### Aside: Some visualization tricks
 

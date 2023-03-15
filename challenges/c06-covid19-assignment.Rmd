@@ -37,6 +37,7 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 ```{r setup}
 library(tidyverse)
 library(stringr)
+library(GGally)
 ```
 
 *Background*: [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is the disease caused by the virus SARS-CoV-2. In 2020 it became a global pandemic, leading to huge loss of life and tremendous disruption to society. The New York Times (as of writing) publishes up-to-date data on the progression of the pandemic across the United States---we will study these data in this challenge.
@@ -380,7 +381,7 @@ sorted_deaths %>%
 ```
 
 ```{r}
-mapped_cases_and_deaths <- sorted_cases %>%
+cases_and_deaths <- sorted_cases %>%
   inner_join(
     sorted_deaths,
     by = "fips"
@@ -390,26 +391,68 @@ mapped_cases_and_deaths <- sorted_cases %>%
     subregion = county_name %>%
       str_extract(., "[\\w|\\s]+,") %>%
       str_remove(., " County,") %>%
+      str_remove(., " Parish,") %>%
       str_remove(., ",") %>%
       str_to_lower(),
     region = county_name %>%
       str_extract(., ", [\\w|\\s]+") %>%
       str_remove(., ", ") %>%
       str_to_lower()
-  ) %>% 
+  )
+mapped_cases_and_deaths <- cases_and_deaths %>% 
   right_join(
-    map_data("county"),
-    by = "subregion"
+    us_counties,
+    by = c("subregion","region")
   )
 ```
 
 ```{r}
 mapped_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = max_deaths_per100k)) +
-  geom_polygon(color = "gray90", size = 0.1) +
-  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
-  scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="right",
+  group_by(subregion, region, fips)
+```
+
+
+```{r}
+summative_cases_and_deaths <- mapped_cases_and_deaths %>% 
+  group_by(subregion, region, fips) %>% 
+  summarise(
+    county_pop = mean(population),
+    county_max_cases_per100k = max(max_cases_per100k),
+    county_max_deaths_per100k = max(max_deaths_per100k)
+  ) %>%
+  ungroup() %>% 
+  # left_join(
+  #   mapped_cases_and_deaths,
+  #   by = "fips",
+  # ) %>% 
+  left_join(
+    us_counties,
+    by = c("subregion","region")
+  )
+  
+
+# sanity checking that the population aggregation is
+# roughly similar to the actual USA population of
+# 330 million
+# assertthat::assert_that(
+#   between(
+#     sum(summative_cases_and_deaths$county_pop),
+#     250000000,
+#     400000000
+#   )
+# )
+
+facetable_cases_pop_deaths <- summative_cases_and_deaths %>% 
+  pivot_longer(
+    cols = starts_with("county_"),
+    names_to = "metric",
+    values_to = "people"
+  )
+facetable_cases_pop_deaths
+```
+
+```{r}
+theme_maps <- theme(legend.position="right",
     axis.line=element_blank(),
     axis.text=element_blank(),
     axis.ticks=element_blank(),
@@ -419,23 +462,56 @@ mapped_cases_and_deaths %>%
     panel.grid=element_blank()
   )
 ```
+
 ```{r}
-mapped_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = max_cases_per100k)) +
+facetable_cases_pop_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = people)) +
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_continuous(type = "viridis", trans = "log") +
-  theme(legend.position="right",
-    axis.line=element_blank(),
-    axis.text=element_blank(),
-    axis.ticks=element_blank(),
-    axis.title=element_blank(),
-    panel.background=element_blank(),
-    panel.border=element_blank(),
-    panel.grid=element_blank()
-  )
+  theme_maps +
+  facet_wrap(~metric, ncol = 1)
+```
+```{r}
+summative_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = county_pop,
+             label)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log", name = "Population") +
+  theme_maps
+```
+```{r}
+summative_cases_and_deaths %>% 
+  ggpairs(
+    # aes(size = .0000001),
+    columns = 4:6,
+    columnLabels = c("Population", "Cases", "Deaths")
+  ) + 
+  scale_x_continuous(n.breaks = 3, trans = "log") +
+  scale_y_continuous(n.breaks = 4, trans = "log") +
+  
+  theme_gray()
 ```
 
+
+Part of this data sifting was figuring out how to parse county data from
+Louisiana, which often would show up as blank because it has parishes instead.
+To learn more about the data at hand, I filtered all Louisiana "county" names
+and checked them here so I could update the parser in the previous merge.
+```{r}
+cases_and_deaths %>% 
+  filter(
+    region == "louisiana"
+  ) %>%
+  distinct(subregion)
+
+us_counties %>% 
+  filter(
+    region == "louisiana"
+  ) %>%
+  distinct(subregion)
+```
 
 ### Aside: Some visualization tricks
 <!-- ------------------------- -->
