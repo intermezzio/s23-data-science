@@ -143,6 +143,15 @@ To join these datasets, we'll need to use [FIPS county codes](https://en.wikiped
 
 ### __q3__ Process the `id` column of `df_pop` to create a `fips` column.
 
+```{r}
+df_covid %>% 
+  filter(
+    county == "Loving",
+    state == "Texas"
+  )
+```
+
+
 ```{r q3-task}
 ## TASK: Create a `fips` column by extracting the county code
 df_q3 <- df_pop %>% 
@@ -481,6 +490,18 @@ summative_cases_and_deaths %>%
   scale_fill_continuous(type = "viridis", trans = "log", name = "Population") +
   theme_maps
 ```
+
+```{r}
+summative_cases_and_deaths %>% 
+  filter(
+    subregion == "loving",
+    region == "texas"
+  ) %>% 
+  arrange(
+    county_max_cases_per100k
+  )
+```
+
 ```{r}
 summative_cases_and_deaths %>% 
   ggpairs(
