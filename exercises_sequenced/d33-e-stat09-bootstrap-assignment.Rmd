@@ -73,7 +73,10 @@ v_mean_est[1:9]
 ```{r q1-task}
 ## TASK: Use the demo-map code above to mutate df_resample_norm, create the column mean_est
 df_q1 <-
-  df_resample_norm
+  df_resample_norm %>% 
+    mutate(
+      mean_est = map_dbl(map(df, pull, x), mean)
+    )
 
 df_q1
 ```
@@ -116,7 +119,7 @@ df_q2 <-
   mutate(
     estimates = map(
       splits,
-      ~ analysis(.x) %>% summarize(mean_est = mean(x)) %>% pull(mean_est)
+      ~ analysis(.x) %>% pull(x) %>% fitdistr(densfun = "normal") %>% tidy()
     )
   )
 

@@ -122,11 +122,7 @@ Once we've fit a distribution, we can use the estimated parameters to approximat
 pr_true <- pweibull(q = 2, shape = 2, scale = 4)
 
 ## TASK: Extract the parameter estimates from df_q2 and estimate Pr[Y <= 2]
-pr_est <- df_q2 %>% 
-  pull(y) %>% 
-  fitdistr(densfun="normal") %>% 
-  tidy() %>% 
-  
+pr_est <- pnorm(2, mean=df_q2$estimate[[1]], sd=df_q2$estimate[[2]])
 
 pr_true
 pr_est

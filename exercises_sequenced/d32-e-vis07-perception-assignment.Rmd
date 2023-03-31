@@ -43,6 +43,7 @@ mpg %>%
 **Observations**:
 
 - What are some issues with this graph?
+- Hard to read, why even use cty as a quantitative metric
 
 ### __q2__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -57,6 +58,9 @@ as_tibble(mtcars) %>%
 ```
 
 - What are some issues with this graph?
+- Reminds me of a graph I made once
+- Size of dots is a hard metric to read
+- a matrix of points wastes 2 axes
 
 ### __q3__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -68,6 +72,8 @@ diamonds %>%
 ```
 
 - What are some issues with this graph?
+- Ideal is at the bottom
+- Unclear what the x axis means
 
 ### __q4__ What are some issues with the following graph? *Don't just say* "it's bad"---use concepts from the required reading.
 
@@ -81,6 +87,9 @@ diamonds %>%
 ```
 
 - What are some issues with this graph?
+- No title
+- No place to start
+- Ticks outside the graph are confusing
 
 <!-- include-exit-ticket -->
 # Exit Ticket
