@@ -126,6 +126,16 @@ as_tibble(iris) %>%
     names_to = "part",
     values_to = "length",
     cols = -Species
+  ) %>% 
+  mutate(
+    Species = fct_reorder(Species, desc(length)),
+    part = fct_reorder(part, length)
+  ) %>% 
+  ggplot(aes(length, Species)) +
+  geom_point() +
+  facet_grid(part~., scale = "free_y", space = "free") +
+  theme(
+    strip.text.y = element_text(angle = 0)
   )
 ```
 
