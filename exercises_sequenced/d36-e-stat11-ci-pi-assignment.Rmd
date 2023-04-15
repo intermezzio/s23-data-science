@@ -17,6 +17,7 @@ reading: 0
 library(tidyverse)
 library(modelr)
 library(broom)
+library(rlang)
 
 ## Helper function to compute uncertainty bounds
 add_uncertainties <- function(data, model, prefix = "pred", ...) {
@@ -64,8 +65,8 @@ ci_lwr <- mu - 1.96 * sd / sqrt(n)
 ci_upr <- mu + 1.96 * sd / sqrt(n)
 ## TODO: Use the equations above to compute a prediction interval for the
 ##       normal distribution rnorm(mean = mu, sd = sd)
-pi_lwr <- NA_real_
-pi_upr <- NA_real_
+pi_lwr <- mu - 1.96 * sd
+pi_upr <- mu + 1.96 * sd
 ```
 
 Use the following tests to check your work.
@@ -132,7 +133,20 @@ Take a quick look at the plot above, and make a prediction (to yourself) whether
 ```{r q2-task}
 ## TODO: Estimate CI and PI using the formulas from q1, use diamonds_train
 ##       and assign your estimates to columns ci_lwr, ci_upr, pi_lwr, pi_upr
-df_q2 <- NA
+yippee_summary <- function (df, stat) {
+  df %>% 
+    summarize(
+      stat_mean = mean({{stat}}),
+      stat_sd = sd({{stat}}),
+      stat_se = stat_sd / sqrt(length({{stat}})),
+      ci_lwr = stat_mean - 1.96 * stat_se,
+      ci_upr = stat_mean + 1.96 * stat_se,
+      pi_lwr = stat_mean - 1.96 * stat_sd,
+      pi_upr = stat_mean + 1.96 * stat_sd
+    )
+}
+df_q2 <- diamonds_train %>% 
+  yippee_summary(price)
 df_q2
 ```
 
@@ -163,21 +177,29 @@ df_q2 %>%
 **Observations**:
 
 - Compare the intervals against the price observations; do the intervals and observations relate to each other like you would expect?
+  - Not at all! Price isn't below zero
 - Are the CI and PI working correctly? How would you check this?
+  - No! They don't catch the most dense areas and the PI has area in the interval that definitely shouldn't be
 - What *assumptions* did you make when defining your CI and PI above? Are those assumptions valid for these data?
+  - Not normal
 
 ### __q3__ Test whether your CI and PI are constructed correctly: Remember the definitions of what CI and PI are meant to accomplish, and check how closely your intervals agree with the validation data.
 
 ```{r q3-task}
 ## TODO: Devise a test to see if your CI and PI are correctly reflecting
 ##       the diamonds population; use diamonds_validation in your testing
+diamonds_validate %>% 
+  summarize(
+    in_pi = mean(df_q2$pi_lwr < price & price < df_q2$pi_upr),
+    in_ci = df_q2$ci_lwr < mean(price) & mean(price) < df_q2$ci_upr
+  )
 ```
 
 **Observations**:
 
-- Does your CI include the mean price of diamonds?
-  - Do we expect the CI it to *always* include the true parameter?
-- Does your PI include the appropriate fraction of diamond prices?
+- Does your CI include the mean price of diamonds? Yes
+  - Do we expect the CI it to *always* include the true parameter? No
+- Does your PI include the appropriate fraction of diamond prices? Yes
 
 <!-- include-exit-ticket -->
 # Exit Ticket

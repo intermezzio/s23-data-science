@@ -256,7 +256,15 @@ pr_threshold <- 0.5
 ## TODO: compute true positive rate (TPR) and false positive rate (FPR) with the
 ##       given pr_threshold. Assign these to the columns TPR and FPR.
 df_q1 <-
-  df_basic
+  df_basic %>% 
+    summarize(
+      TP = sum((pr_heart_disease > pr_threshold) & heart_disease),
+      FP = sum((pr_heart_disease > pr_threshold) & !heart_disease),
+      TN = sum((pr_heart_disease <= pr_threshold) & !heart_disease),
+      FN = sum((pr_heart_disease <= pr_threshold) & heart_disease),
+      TPR = TP / (TP + FN),
+      FPR = FP / (FP + TN)
+    )
 
 df_q1
 ```
@@ -319,6 +327,7 @@ df_basic %>%
 **Observations**:
 
 - Is this an effective or ineffective classifier? How do you know?
+  - Ineffective because it's close to the line
 
 ## Practice Assessing Classifiers
 <!-- ------------------------- -->
@@ -360,8 +369,8 @@ df_cheating %>%
 
 **Observations**:
 
-- Is this an effective classifier?
-- What explains this model's performance? Is this model valid for prediction?
+- Is this an effective classifier? 100%
+- What explains this model's performance? Is this model valid for prediction? It knows all
 
 Next you'll fit your own model and assess its performance.
 
@@ -371,9 +380,17 @@ Next you'll fit your own model and assess its performance.
 ## TODO: Fit your own logistic regression model on df_train, predict class
 ##       probabilities on df_validate.
 ##
-fit_q4 <- NA
+fit_q4 <- glm(
+  formula = heart_disease ~ restecg + sex + cp + trestbps,
+  data = df_train,
+  family = "binomial"
+)
 df_q4 <-
-  df_validate
+  df_validate %>%
+  add_predictions(fit_q4, var = "log_odds_ratio") %>%
+  arrange(log_odds_ratio) %>%
+  rowid_to_column(var = "order") %>%
+  mutate(pr_heart_disease = inv.logit(log_odds_ratio))
 
 ## Here's another model for comparison
 fit_baseline <- glm(
@@ -456,8 +473,11 @@ df_thresholds %>%
 **Observations**:
 
 - What is a reasonable value for TPR, and why did you pick that value?
+  - 75% because I want to be confident with a diagnosis I give
 - What values of `pr_threshold` meet or exceed that TPR?
+  - 0.35 or lower
 - What specific value of `pr_threshold` do you pick, and why?
+  - 0.35 because it has a better FPR
 
 <!-- include-exit-ticket -->
 # Exit Ticket

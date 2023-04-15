@@ -105,11 +105,11 @@ experimental_design %>%
 *Observations*
 
 - Which experimental condition do you *expect* to have greater yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - Treatment
 - Which experimental condition do your results suggest has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - Control
 - The true difference between the treatment mean and control mean is such that the treatment yield should be `1` unit higher. How does your difference compare with that difference?
-  - (Your response here)
+  - Not similar at all
 
 ## Confound - Increased yield due to proximity to the river!
 
@@ -154,7 +154,7 @@ Terminology: When there are other factors present in an experiment affecting our
 
 ```{r q2-task}
 ## TODO: Define your own experimental design
-your_design <- NA_character_
+your_design <- c("C", "T", "T", "C", "C", "T")
 
 ## NOTE: No need to edit; use this to simulate your design
 your_design %>%
@@ -169,11 +169,11 @@ your_design %>%
 *Observations*
 
 - Which experimental condition do your results suggest has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - Treatment
 - The true difference between the treatment mean and control mean is such that the treatment yield should be `1` unit higher. How does your difference compare with that difference?
-  - (Your response here)
+  - Just about
 - What effects are you seeing? The effect of the Treatment `T` *only*, or the combined effects of the Treatment and the river? How does this affect your estimate of the effect of the treatment?
-  - (Your response here)
+  - Pretty much the effects of `T` only
 
 ## Randomization to the rescue!
 
@@ -216,11 +216,11 @@ experimental_design %>%
 *Observations*
 
 - Which experimental condition do you find has a higher mean yield? The Treatment `T` or Control `C`?
-  - (Your response here)
+  - Treatment
 - Since you've randomized the conditions, will the confound (river) have a *consistent* effect on the outcome?
-  - (Your response here)
+  - With a sample size of 6, it's inconsistent but present.
 - The true difference between the treatment mean and control mean is one unit. How does your difference compare with that value?
-  - (Your response here)
+  - 60% off!
 
 ## Why does randomization work?
 

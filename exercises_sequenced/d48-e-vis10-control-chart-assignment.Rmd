@@ -66,7 +66,7 @@ Following Step 1, we need to assign batch identifiers to group the data.
 #        consecutive groups of 4 rows have the same id
 df_q1 <-
   df_data %>%
-  mutate(id = row_number())
+  mutate(id = (row_number() - 1) %/% 4)
 df_q1
 ```
 
@@ -103,9 +103,9 @@ Next, we'll use our knowledge about confidence intervals and the CLT to set the 
 ```{r q2-task}
 ## TODO: Edit the code below to create an `id` column where
 #        consecutive groups of 4 rows have the same id
-X_grand <- NA_real_
-X_g4_lo <- NA_real_
-X_g4_up <- NA_real_
+X_grand <- 0
+X_g4_lo <- - 3 / sqrt(4)
+X_g4_up <- 3 / sqrt(4)
 X_g4_lo
 X_grand
 X_g4_up
@@ -146,11 +146,11 @@ df_q1 %>%
 
 **Observations**:
 - How many points would you *expect* to lie outside the control limits, assume the data were completely random?
-  - (Your response here)
+  - 99.7%, or all but maybe 1
 - How many points lie *outside* the control limits? Is this about as many as you would expect if the data were random?
-  - (Your response here)
+  - 0, yes
 - Do you see any coherent patterns in the points? Does this make sense?
-  - (Your response here)
+  - They're mostly closer to the main
 
 ## Control Chart: Application
 
@@ -194,9 +194,9 @@ df_mass %>%
 
 **Observations**:
 - These measurement were carried out by some of the most experienced measurement scientists in the world. Are professional measurements *exactly* repeatable?
-  - (Your response here)
+  - No
 - What patterns do you notice?
-  - (Your observation here)
+  - Over time measurement offset changes
   - (Your observation here)
   - ...
 
@@ -213,13 +213,14 @@ df_q4 <-
   group_by(date) %>%
   summarize(
     Y_mean = mean(Y),
-    date = min(date)
+    date = min(date),
+    group = (row_number(Y) - 1) %/% n_group
   )
 ## Control limits and grand mean; complete this code
-Y_mean <- NA_real_
-Y_sd <- NA_real_
-Y_g_lo <- NA_real_
-Y_g_up <- NA_real_
+Y_mean <- mean(df_mass$Y)
+Y_sd <- sd(df_mass$Y)
+Y_g_lo <- Y_mean - 3 * Y_sd / sqrt(n_group)
+Y_g_up <- Y_mean + 3 * Y_sd / sqrt(n_group)
 Y_g_lo
 Y_mean
 Y_g_up
@@ -257,9 +258,9 @@ df_q4 %>%
 
 **Observations**:
 - Copy the patterns you noticed above down here; compare those against this new control chart.
-  - (Your responses here)
+  - No a lot of these are off
 - What additional observations can you make, based on the control chart?
-  - (Your response here)
+  - Not normally distributed
 
 Remember that a control chart is only a *detection* tool; to say more, you would need to go investigate the data collection process.
 

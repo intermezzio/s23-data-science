@@ -85,14 +85,34 @@ Congrats! You just *liberated* data from a plot!
 
 ```{r q4-task}
 ## TODO: Load the data you extracted above
-df_price <- NA
-df_production <- NA
+df_price <- read_csv("data/beef_price.csv", col_names = c("month", "price_perc"))
+df_production <- read_csv("data/beef_production.csv", col_names = c("month", "prod_perc"))
+```
+
+
+```{r q4-task-pt2}
+
+df_price %>% 
+  mutate(
+    approx_month = round(month, 2)
+  ) %>% 
+  full_join(
+    df_production %>% mutate(approx_month = round(month, 2)),
+    by = "approx_month"
+  ) %>% 
+  drop_na() %>% 
+  # glimpse()
+  # arrange(approx_month) %>% 
+  ggplot(aes(x = price_perc, y = prod_perc, color = approx_month)) +
+  geom_point()
 ```
 
 **Observations**:
 
 - What relationship do you see between price and production levels?
+  - Strong positive correlation
 - Does that relationship change over time?
+  - Not really
 
 <!-- include-exit-ticket -->
 # Exit Ticket

@@ -17,6 +17,8 @@ hypotheses and potential actions, based on different scenarios.
 *Reading*: [Statistical Inference in One Sentence](https://medium.com/hackernoon/statistical-inference-in-one-sentence-33a4683a6424) (9 min)
 
 ```{r setup}
+library(MASS)
+library(broom)
 library(tidyverse)
 library(rsample)
 ```
@@ -106,14 +108,23 @@ less than the threshold `price_threshold`.
 ```{r q1-task}
 ## TASK: Compute a confidence interval on the mean, use to answer the question
 ## above
-df_sample
-price_threshold
+df_sample %>% 
+  summarize(
+    price_mean = mean(price),
+    price_sd = sd(price),
+    price_se = price_sd / sqrt(length(price)),
+    price_lo = price_mean - pnorm(0.025) * price_se,
+    price_hi = price_mean + pnorm(0.025) * price_se
+  )
+# price_threshold
 ```
 
 **Observations**:
 
 - Can you reject the null hypothesis **H_0**?
+  - No, I cannot reject the null hypothesis.
 - How does this affect your decision?
+  - I would not buy the diamonds in bulk.
 
 ## Different Scenario, Different Hypotheses
 <!-- -------------------------------------------------- -->
@@ -159,12 +170,37 @@ of cases in a sample with variable `X` equal to `"value"`. You'll need to figure
 ```{r q2-task}
 ## TASK: Estimate a confidence interval for the proportion of high-cut diamonds
 ## in the population. Look to `e-stat09-bootstrap` for starter code.
+
+df_resample_norm <-
+  df_sample %>% 
+  bootstraps(times = 1000) %>%
+  mutate(df = map(splits, ~ analysis(.x)))
+  
+df_prices <-
+  df_resample_norm %>% mutate(
+    mean_est = map_dbl(
+    df_resample_norm %>% pull(df),
+    ~ summarize(.x, mean_est = mean(cut == "Premium" | cut == "Ideal")) %>% pull(mean_est)
+    )
+  ) %>% 
+  summarize(
+    perc_mean = mean(mean_est),
+    perc_sd = sd(mean_est),
+    perc_se = sd(mean_est) / sqrt(length(mean_est)),
+    perc_hi = perc_mean + pnorm(0.005) * perc_se,
+    perc_lo = perc_mean - pnorm(0.005) * perc_se
+  )
+  
+
+df_prices
 ```
 
 **Observations**:
 
 - Can you reject the null hypothesis **H_0**?
+  - Yes.
 - How does this affect your decision?
+  - I buy the diamonds
 
 ## Closing Thoughts
 <!-- -------------------------------------------------- -->
@@ -179,11 +215,16 @@ null hypothesis?
 
 ```{r q3-task}
 ## TASK: Compute the population mean of diamond price
-
-price_threshold
+df_population %>% 
+  summarize(
+    perc_good = mean(cut == "Premium" | cut == "Ideal"),
+    price_mean = mean(price)
+  )
 ```
 
 **Observations**:
+
+I was right every time :)
 
 - Did you reject the null hypothesis in q1?
 - What is the actual truth?
@@ -210,6 +251,8 @@ reject the null hypothesis?
 ```
 
 **Observations**:
+
+What can I say??? I'm right
 
 - Did you reject the null hypothesis in q2?
 - What is the actual truth?

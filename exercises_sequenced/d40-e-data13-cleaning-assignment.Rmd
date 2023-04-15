@@ -35,7 +35,8 @@ This is a *messy* dataset; one we'll have to clean if we want to make sense of i
 
 ```{r look-no-names}
 ## NOTE: No need to edit; run and inspect
-read_csv(filename_disease) %>% glimpse()
+df_no_cols <- read_csv(filename_disease)
+df_no_cols %>% glimpse()
 ```
 
 *Observations*:
@@ -76,7 +77,8 @@ Following the [dataset documentation](https://archive.ics.uci.edu/ml/datasets/He
 
 ```{r q1-task}
 ## TODO: Assign the column names to col_names; make sure they are strings
-col_names <- c()
+col_names <- c("age", "sex", "cp", "trestbps", "chol", "fbs", "restecg", "thalach",
+               "exang", "oldpeak", "slope", "ca", "thal", "num")
 ```
 
 Use the following to check your code.
@@ -112,7 +114,7 @@ We saw above that `read_csv()` incorrectly guessed some of the column types. Let
 ```{r q2-task}
 ## TODO: Use the col_names and col_types arguments to give the data the
 ##       correct column names, and to set their types to col_number()
-df_q2 <- NA
+df_q2 <- read_csv(filename_disease, col_names = col_names, col_types = "dddddddddddddd") # "iiiiiiiiididdi")
 
 df_q2 %>% glimpse()
 ```
@@ -155,12 +157,43 @@ convert_sex <- function(x) {
   )
 }
 ## TODO: Complete the remaining conversion functions
-convert_cp <- NA
-convert_fbs <- NA
-convert_restecv <- NA
-convert_exang <- NA
-convert_slope <- NA
-convert_thal <- NA
+convert_cp <- function(x) {
+  case_when(
+    x == 1 ~ "typical angina",
+    x == 2 ~ "atypical angina",
+    x == 3 ~ "non-anginal pain",
+    x == 4 ~ "asymptomatic",
+    TRUE ~ NA_character_
+  )
+}
+convert_fbs <- function(x) {
+  x == 1
+}
+convert_restecg <- function(x) {
+  case_when(
+    x == 2 ~ "Estes' criteria",
+    x == 1 ~ "ST-T wave abnormality",
+    x == 0 ~ "normal",
+    TRUE ~ NA_character_
+  )
+}
+convert_exang <- convert_fbs
+convert_slope <- function(x) {
+  case_when(
+    x == 1 ~ "upsloping",
+    x == 2 ~ "flat",
+    x == 3 ~ "downsloping",
+    TRUE ~ NA_character_
+  )
+}
+convert_thal <- function(x) {
+  case_when(
+    x == 3 ~ "normal",
+    x == 6 ~ "fixed defect",
+    x == 7 ~ "reversible defect",
+    TRUE ~ NA_character_
+  )
+}
 ```
 
 Use the following to check your code.
@@ -178,7 +211,7 @@ assertthat::assert_that(assertthat::are_equal(
 ))
 
 assertthat::assert_that(assertthat::are_equal(
-  convert_restecv(c(0, 1, 2)),
+  convert_restecg(c(0, 1, 2)),
   c("normal", "ST-T wave abnormality", "Estes' criteria")
 ))
 
@@ -205,7 +238,14 @@ print("Excellent!")
 ```{r q4-task}
 ## TODO: Convert the appropriate columns using your helper functions
 df_q4 <-
-  df_q2
+  df_q2 %>% mutate(
+    sex = as.factor(convert_sex(sex)),
+    cp = as.factor(convert_cp(cp)),
+    restecg = as.factor(convert_restecg(restecg)),
+    exang = convert_exang(exang),
+    thal = as.factor(convert_thal(thal)),
+    fbs = convert_fbs(fbs),
+  )
 df_q4
 ```
 
@@ -219,13 +259,18 @@ Now we have a clean dataset we can use for EDA and modeling---great! Before we f
 
 ```{r q5-task}
 ## TODO: Perform your first checks on df_q4
+colSums(is.na(df_q4))
+
 ```
 
 **Observations**:
 
 - Which variables are numerical? Which are factors? Which are logical?
+  - See column types
 - How many missing values (`NA`'s) does each variable have?
+  - See output
 - How many rows have *any* missing values in any of the columns?
+  - A few
 
 If we were just doing EDA, we could stop here. However we're going to use these data for *modeling* in a future exercise. Most models can't deal with `NA` values, so we must choose how to handle rows with `NA`'s. In cases where only a few observations are missing values, we can simply *filter out* those rows.
 
@@ -233,7 +278,7 @@ If we were just doing EDA, we could stop here. However we're going to use these 
 
 ```{r q6-task}
 df_q6 <-
-  df_q4
+  df_q4 %>% drop_na()
 
 df_q6
 ```

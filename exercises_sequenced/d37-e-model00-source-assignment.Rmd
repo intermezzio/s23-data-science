@@ -26,7 +26,7 @@ As we've seen in this course, real data exhibit *variability*; that is, repeated
 
 ## The Cause-Source Quadrants
 
-As descrinbed in the reading, the *cause-source quadrants* organize variability into four distinct categories. Today, we're going to focus on the *source* axis, and limit our attention to *chance causes*.
+As described in the reading, the *cause-source quadrants* organize variability into four distinct categories. Today, we're going to focus on the *source* axis, and limit our attention to *chance causes*.
 
 ![Variability quadrants](./images/cause-source-quadrants.png)
 
@@ -56,17 +56,17 @@ Other physical quantities exhibit both real and induced variability. Since the c
 ### __q1__ Imagine the manufacturer selects one part and performs multiple non-destructive tensile tests on that single part, under similar conditions. The measured elasticity from each test is slightly different. Is this variability real or induced?
 
 - real or induced?
-- (Why?)
+- Induced
 
 ### __q2__ Imagine the manufacturer selects multiple parts and---for each part---performs multiple non-destructive tensile tests, all under similar conditions. The measured elasticity values for each part are averaged to provide a more reliable estimate for each part. Upon comparing the parts, each averaged value is fairly different. Is this variability real or induced?
 
 - real or induced?
-- (Why?)
+- Real
 
 ### __q3__ Now the manufacturer selects multiple parts and performs a destructive tensile test to characterize the strength of each part, with tests carried out under similar conditions. The measured strength values exhibit a fair amount of variability. Is this variability real or induced?
 
 - real or induced?
-- (Why?)
+- Real
 
 ## Analyzing Data
 
@@ -120,11 +120,11 @@ df_meas %>%
 
 *Observations*
 - Which is larger: The variability due to noise, or the variability due to deviation?
-  - (Your response here)
+  - Noise
 
 ### __q5__ Imagine `Y` represents the measured strength of the cast steel. Would it be safe to simply average all of the values and use that as the material strength for design?
 
-- (Your response here)
+- No
 
 ### __q6__ Compute the `0.1` quantile of the `Y` measurements. Would this be a conservative value to use as a material strength for design?
 
@@ -136,7 +136,7 @@ Y_mean <-
   summarize(Y_mean = mean(Y)) %>%
   pull(Y_mean)
 
-Y_lo <- NA_real_ # Complete the quantile calculation
+Y_lo <- quantile(df_meas$Y, probs = 0.1) # Complete the quantile calculation
 
 # Compare the values
 Y_mean
@@ -155,9 +155,9 @@ print("Nice!")
 *Observations*
 
 - How does `Y_lo` compare with `Y_mean`?
-  - (Your response here)
+  - Much lower
 - Would the 10% quantile `Y_lo` be a conservative material strength for design?
-  - (Your response here)
+  - Yes
 
 ### __q7__ The following code reduces the variability due to noise before computing the quantile. Run the code below, and answer the questions under *Observations* below.
 
@@ -178,13 +178,13 @@ Y_lo_improved
 *Observations*
 
 - Is the new value `Y_lo_improved` more or less conservative than the original `Y_lo`?
-  - (Your response here)
+  - Less conservative
 - What features about the data collection / dataset `df_meas` enable the calculation of `Y_lo_improved`?
-  - (Your response here)
+  - Grouping by part allows us to get a part metric
 - Measuring the strength of a part is a *destructive* experiment. Would it be possible to gather a dataset like `df_meas` in reality?
-  - (Your response here)
+  - No
 - For what real properties (material, or otherwise) would it be possible to collect data like `df_meas`?
-  - (Your response here)
+  - Non-destructive tests
 
 *Aside*: This kind of statistical experimental design is sometimes called a [nested design](https://online.stat.psu.edu/stat503/lesson/14/14.1).
 

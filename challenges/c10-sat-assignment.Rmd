@@ -57,9 +57,10 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 
 ```{r q1-task}
 ## TODO:
-df_sat <- NA
+df_sat <- read_excel("data/sat.xls")
 
 ## TODO: Do your "first checks"
+df_sat %>% glimpse()
 ```
 
 **Observations**:
@@ -68,18 +69,19 @@ df_sat <- NA
 
 | Column     | Meaning |
 |------------|---------|
-| `high_GPA` | ???     |
-| `math_SAT` | ???     |
-| `verb_SAT` | ???     |
-| `comp_GPA` | ???     |
-| `univ_GPA` | ???     |
+| `high_GPA` | The high school GPA of a given student     |
+| `math_SAT` | The Math portion of the SAT score     |
+| `verb_SAT` | The Verbal portion of the SAT score     |
+| `comp_GPA` | The CS GPA of a given student      |
+| `univ_GPA` | The university GPA of a given student     |
 
 - What information do we have about these students?
-  - (Your response here)
+  - Grades from high school, SAT scores, and grades from college
 - What kinds of information *do we not have* about these students?
-  - (Your response here)
+  - Demographics, other metrics of performance
 - Based on these missing variables, what possible effects could be present in the data that we would have *no way of detecting*?
-  - (Your response here)
+  - This can be a biased sample, or there could be other confounding variables
+    that affect all of these statistics
 
 # Analysis with Hypothesis Testing
 <!-- ----------------------------------------------------------------------- -->
@@ -104,14 +106,36 @@ df_composite <-
 
 ```{r q2-task}
 ## TODO:
+coeff <- (1600 / 4.0)
+gpa_color <- "blue"
+sat_color <- "red"
+
+df_composite %>% 
+  # pivot_longer(
+  #   names_to = "metric",
+  #   values_to = "measure",
+  #   cols = c('high_GPA', 'both_SAT')
+  # ) %>% 
+  ggplot(aes(x = univ_GPA)) +
+  geom_point(aes(y = high_GPA), color = gpa_color) +
+  geom_point(aes(y = both_SAT / coeff), color = sat_color) +
+  scale_y_continuous(
+    name = "High School GPA",
+    sec.axis = sec_axis(~.*coeff, name = "SAT Score")
+  ) +
+  theme_classic() +
+  theme(
+    axis.title.y = element_text(color = gpa_color, size=13),
+    axis.title.y.right = element_text(color = sat_color, size=13)
+  )
 ```
 
 **Observations**:
 
 - What relationship do `univ_GPA` and `both_SAT` exhibit?
-  - (Your response here)
+  - They have a positive correlation.
 - What relationship do `univ_GPA` and `high_GPA` exhibit?
-  - (Your response here)
+  - They also have a positive correlation.
 
 ### Hypothesis Testing with a Correlation Coefficient
 <!-- ------------------------- -->
@@ -131,37 +155,54 @@ The R function `cor.test` implements such a hypothesis test under the assumption
 ### __q3__ Plot histograms for `both_SAT, high_GPA, univ_GPA`. Which---if any---of the variables look approximately normally distributed.
 
 ```{r q3-task}
+df_composite %>% 
+  pivot_longer(
+    names_to = "metric",
+    values_to = "measure",
+    cols = c('high_GPA', 'both_SAT', 'univ_GPA')
+  ) %>% 
+  ggplot(aes(x = measure)) +
+  geom_histogram(bins = 15) +
+  theme_classic() +
+  facet_grid(~metric, scales = "free")
 ```
 
 **Observations**:
 
 - To what extent does `both_SAT` look like a normal distribution?
-  - (Your response here)
+  - The column both_SAT looks like it isn't normally distributed but is moderately close.
 - To what extent does `high_GPA` look like a normal distribution?
-  - (Your response here)
+  - The column high_GPA looks like it is close to but not quite normally distributed.
 - To what extent does `univ_GPA` look like a normal distribution?
-  - (Your response here)
+  - The column univ_GPA does not look normally distributed.
 
 Keep in mind your findings as you complete q4.
 
-### __q4__ Use the function `cor.test()` to construct confidence intervals for `corr[high_GPA, univ_GPA` and `corr[both_SAT, univ_GPA]`. Answer the questions below.
+### __q4__ Use the function `cor.test()` to construct confidence intervals for `corr[high_GPA, univ_GPA]` and `corr[both_SAT, univ_GPA]`. Answer the questions below.
 
 ```{r q4-task}
 ## TODO: Use the function cor.test() to test the correlations between
 ##       high_GPA and univ_GPA, as well as between
 ##       both_SAT and univ_GPA
+
+cor.test(df_composite$high_GPA, df_composite$univ_GPA)
+cor.test(df_composite$both_SAT, df_composite$univ_GPA)
 ```
 
 **Observations**:
 
 - Which correlations are significantly nonzero?
-  - (Your response here)
+  - Both correlations are significantly nonzero, at 0.68 and 0.78.
 - Which of `high_GPA` and `both_SAT` seems to be more strongly correlated with `univ_GPA`?
-  - (Your response here)
+  - The `high_GPA` factor seems more strongly correlated  with `univ_GPA`.
 - How do the results here compare with the visual you created in q2?
-  - (Your response here)
+  - The visual in q2 is harder to read for correlation because it has two different
+    y scales, although both seem to indicate relatively close correlations. 
 - Based on these results, what can we say about the predictive capabilities of both `high_GPA` and `both_SAT` to predict `univ_GPA`?
-  - (Your response here)
+  - Because neither confidence interval for R value overlaps both R
+    values, so the data do suggest that there is a stronger correlation for
+    `high_GPA` than `both_SAT` even if both exhibit a weak positive correlation
+    with `univ_GPA`.
 
 Finally, let's use the bootstrap to perform the same test using *different* assumptions.
 

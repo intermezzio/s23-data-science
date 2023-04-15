@@ -42,10 +42,11 @@ Let's start with a curious observation; look at the effect of `cut` on `price` a
 
 ```{r diamonds-lower-upper}
 ## NOTE: No need to edit this chunk
-diamonds_train %>%
+diamonds_train <- diamonds_train %>%
   mutate(
     grouping = if_else(carat < 1.0, "Lower carat", "Upper carat")
-  ) %>%
+  )
+diamonds_train %>%
 
   ggplot(aes(cut, price)) +
   geom_boxplot() +
@@ -64,8 +65,16 @@ Fit two models on `diamonds_train`, one for `carat <= 1` and one for `carat > 1`
 ## TODO: Fit two models, one to lower (carat <= 1) and
 #        one to upper (carat > 1) diamonds.
 #        Use formula = price ~ cut
-fit_lower <- NA
-fit_upper <- NA
+fit_lower <- 
+  lm(
+    data = diamonds_train %>% filter(grouping == "Lower carat"),
+    formula = price ~ cut
+  )
+fit_upper <- 
+  lm(
+    data = diamonds_train %>% filter(grouping == "Upper carat"),
+    formula = price ~ cut
+  )
 
 ## NOTE: No need to modify this code
 tibble(cut = c("Fair", "Good", "Very Good", "Premium", "Ideal")) %>%
@@ -89,7 +98,9 @@ tibble(cut = c("Fair", "Good", "Very Good", "Premium", "Ideal")) %>%
 **Observations**:
 
 - What model predictions did you expect?
+  - This
 - Did the model predictions match your expectations?
+  - Yes
 
 *Why is this happening?* Let's investigate!
 
@@ -101,8 +112,17 @@ Repeat the same exercise above, but instead of `price ~ cut` fit `carat ~ cut`. 
 ## TODO: Fit two models, one to lower (carat <= 1) and
 #        one to upper (carat > 1) diamonds.
 #        Use formula = carat ~ cut
-fit_carat_lower <- NA
-fit_carat_upper <- NA
+fit_carat_lower <-
+  lm(
+    data = diamonds_train %>% filter(grouping == "Lower carat"),
+    formula = carat ~ cut
+  )
+fit_carat_upper <-
+  lm(
+    data = diamonds_train %>% filter(grouping == "Upper carat"),
+    formula = carat ~ cut
+  )
+
 
 ## NOTE: No need to change this code
 tibble(cut = c("Fair", "Good", "Very Good", "Premium", "Ideal")) %>%
@@ -126,7 +146,9 @@ tibble(cut = c("Fair", "Good", "Very Good", "Premium", "Ideal")) %>%
 **Observations**:
 
 - What trends do the lower and upper models between `carat` and `cut`?
+  - Similar to the limited datasets
 - How might this trend relate to the `price ~ cut` behavior we saw above?
+  - Confounding variables
 
 We can try to fix these issues by adding more predictors. But that leads to our second warning....
 
@@ -144,14 +166,18 @@ The following task will demonstrate this effect.
 #        formula = price ~ cut
 fit_carat_cut <-
   diamonds_train %>%
-  filter(carat <= 1)
-  # lm()
+  filter(carat <= 1) %>% 
+  lm(
+    formula = price ~ carat + cut
+  )
 
 fit_cut_only <-
   diamonds_train %>%
-  filter(carat <= 1)
-  # lm()
-
+  filter(carat <= 1) %>% 
+  lm(
+    formula = price ~ cut
+  )
+  
 ## NOTE: No need to change this code
 tibble(
     cut = c("Fair", "Good", "Very Good", "Premium", "Ideal"),
@@ -177,9 +203,12 @@ tibble(
 **Observations**:
 
 - What effect does `cut` have on `price` for the `cut_only` model?
+  - Negative
 - What effect does `cut` have on `price` for the `carat_cut` model?
+  - Positive
 - What might account for this behavior?
   - *Note*: Feel free to peek at the solution for this answer; this is a *subtle point*.
+  - The ones with worse cuts have more carats
 
 ## Main Punchline
 
