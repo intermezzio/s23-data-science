@@ -23,6 +23,7 @@ library(readxl)
 library(broom)
 library(modelr)
 library(rsample)
+library(MASS)
 ```
 
 <!-- include-rubric -->
@@ -210,14 +211,47 @@ Finally, let's use the bootstrap to perform the same test using *different* assu
 
 ```{r q5-task}
 ## TODO: Use the bootstrap to compute a confidence interval for corr[high_GPA, univ_GPA]
+conf_interval <- function(col) {
+  col_mean <- mean(col)
+  col_sd <- sd(col)
+  col_se <- col_sd / sqrt(length(col))
+  
+  tibble(
+    int_lo = col_mean + qnorm(0.005) * col_se,
+    int_hi = col_mean + qnorm(0.995) * col_se,
+  )
+}
+
+df_composite %>% 
+  bootstraps(times = 1000) %>% 
+  mutate(
+    estimates = map_dfr(splits,
+                    ~ analysis(.x) %>% summarize(
+                      corr_gpa = cor.test(high_GPA, univ_GPA)$estimate,
+                      corr_sat = cor.test(both_SAT, univ_GPA)$estimate,
+                    ))
+  ) %>%
+  summarize(
+    corr_gpa = estimates %>% pull(corr_gpa),
+    corr_sat = estimates %>% pull(corr_sat)
+  ) %>%
+  summarize(
+    interval_gpa = conf_interval(corr_gpa) %>%
+      rename(c(gpa_lo="int_lo", gpa_hi="int_hi")),
+    interval_sat = conf_interval(corr_sat) %>%
+      rename(c(sat_lo="int_lo", sat_hi="int_hi"))
+  ) %>% 
+  unnest()
+
 ```
 
 **Observations**:
 
 - How does your estimate from q5 compare with your estimate from q4?
-  - (Your response here)
+  - The estimate is approximately the same.
 - How does your CI from q5 compare with your CI from q4?
-  - (Your response here)
+  - My confidence intervals are significantly smaller due to an increased
+    sample size. The confidence intervals also no longer overlap.
 
 *Aside*: When you use two different approximations to compute the same quantity and get similar results, that's an *encouraging sign*. Such an outcome lends a bit more credibility to the results.
 
@@ -266,7 +300,9 @@ In this case, we're testing for whether $X$ has a significant effect on $Y$. Let
 
 ```{r q6-task}
 ## TODO: Fit a model of univ_GPA on the predictor both_SAT
-fit_basic <- NA
+fit_basic <-
+  df_composite %>% 
+  lm(formula = univ_GPA ~ both_SAT)
 
 ## NOTE: The following computes confidence intervals on regression coefficients
 fit_basic %>%
@@ -279,9 +315,9 @@ fit_basic %>%
 **Observations**:
 
 - What is the confidence interval on the coefficient of `both_SAT`? Is this coefficient significantly different from zero?
-  - (Your response here)
+  - The confidence interval is approximately 0.0020 to 0.0035, which is significantly different from zero (as it does not include zero)
 - By itself, how well does `both_SAT` predict `univ_GPA`?
-  - (Your response here)
+  - It has a light positive correlation, not super predictive but provably better than nothing.
 
 Remember from `e-model03-interp-warnings` that there are challenges with interpreting regression coefficients! Let's investigate that idea further.
 
@@ -289,16 +325,34 @@ Remember from `e-model03-interp-warnings` that there are challenges with interpr
 
 ```{r q7-task}
 ## TODO: Fit and assess models with predictors both_SAT + high_GPA, and high_GPA alone
+df_composite %>% 
+  lm(formula = univ_GPA ~ high_GPA + both_SAT) %>% 
+  tidy(
+    conf.int = TRUE,
+    conf.level = 0.99
+  )
+```
+```{r}
+df_composite %>% 
+  lm(formula = univ_GPA ~ high_GPA) %>% 
+  tidy(
+    conf.int = TRUE,
+    conf.level = 0.99
+  )
 ```
 
 **Observations**:
 
 - How well do these models perform, compared to the one you built in q6?
-  - (Your response here)
+  - Both perform well, outperforming the SAT model.
 - What is the confidence interval on the coefficient of `both_SAT` when including `high_GPA` as a predictor?? Is this coefficient significantly different from zero?
-  - (Your response here)
+  - The confidence interval includes zero in this scenario, which means the
+    coefficient is not significantly different from zero.
 - How do the hypothesis test results compare with the results in q6?
-  - (Your response here)
+  - These results show that unlike the result in q6, `both_SAT` may not actually
+    positively correlate with
+    academic performance when taking into account a potentially confounding
+    variable, `high_GPA`.
 
 ## Synthesize
 <!-- ------------------------- -->
@@ -310,9 +364,20 @@ Before closing, let's synthesize a bit from the analyses above.
 **Observations**:
 
 - Between `both_SAT` and `high_GPA`, which single variable would you choose to predict `univ_GPA`? Why?
-  - (Your response here)
+  - Based on this data (assuming it is a representative sample), `high_GPA`
+    effectively predicts `univ_GPA` significantly better than `both_SAT`. It is
+    worth noting, however, that this has a potentially confounding variable of
+    how good someone is at getting good grades. For example, if someone cheats
+    in high school and college, or just focuses on grades and ignores other
+    aspects of life, both of GPA scores will be higher but this metric will
+    capture how good someone is at getting good grades instead of how good of
+    a student is.
 - Is `both_SAT` an effective predictor of `univ_GPA`? What specific pieces of evidence do you have in favor of `both_SAT` being effective? What specific pieces of evidence do you have against?
-  - (Your response here)
+  - The data do not suggest that `both_SAT` is an effective predictor of
+    `univ_GPA`. A direct positive correlation between `both_SAT` and `univ_GPA`
+    makes it tempting to assume this positive correlation, but when `high_GPA`
+    is taken into account, the data do not show that `both_SAT` positively
+    correlates with `univ_GPA`.
 
 # End Notes
 <!-- ----------------------------------------------------------------------- -->
