@@ -167,8 +167,7 @@ theme_maps <-
 df_data %>% 
   group_by(county_name) %>% 
   summarize(
-    c_cases = n(),
-    c_checked = sum()
+    total = n()
   ) %>% 
   left_join(
     mass_counties,
@@ -180,6 +179,12 @@ df_data %>%
   scale_fill_continuous(type = "viridis") +
   theme_maps
   # ggplot(aes())
+```
+
+```{r}
+# df_data %>% 
+#   filter() %>% 
+#   ggplot(aes(x = age))
 ```
 
 
@@ -234,7 +239,7 @@ By default `glm` uses the first factor level present as the reference level. The
 ## TODO: Re-fit the logistic regression, but set "white" as the reference
 ## level for subject_race
 
-fit_q7 %>% tidy()
+# fit_q7 %>% tidy()
 ```
 
 **Observations**:
@@ -253,7 +258,7 @@ One way we can explain differential arrest rates is to include some measure indi
 ```{r q8-task}
 ## TODO: Repeat the modeling above, but control for whether contraband was found
 ## during the police stop
-fit_q8 %>% tidy()
+# fit_q8 %>% tidy()
 ```
 
 **Observations**:
