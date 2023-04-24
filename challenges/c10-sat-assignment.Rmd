@@ -210,6 +210,24 @@ Finally, let's use the bootstrap to perform the same test using *different* assu
 ### __q5__ Use the bootstrap to approximate a confidence interval for `corr[high_GPA, univ_GPA`. Compare your results---both the estimate and confidence interval---to your results from q4.
 
 ```{r q5-task}
+sat_corr <- function(split, ...) {
+  # lm(univ_GPA ~ high_GPA, data = analysis(split)) %>%
+  #   tidy()
+  df <- analysis(split)
+  tibble(
+    term = "high_GPA",
+    estimate = cor.test(df %>% pull(high_GPA), df$univ_GPA)$estimate
+  )
+}
+
+df_composite %>% 
+  bootstraps(times = 1000) %>% 
+  mutate(results = map_dfr(splits, sat_corr)) %>% 
+  int_pctl(results)
+```
+
+
+```{r q5-task}
 ## TODO: Use the bootstrap to compute a confidence interval for corr[high_GPA, univ_GPA]
 conf_interval <- function(col) {
   col_mean <- mean(col)
@@ -234,14 +252,14 @@ df_composite %>%
   summarize(
     corr_gpa = estimates %>% pull(corr_gpa),
     corr_sat = estimates %>% pull(corr_sat)
-  ) %>%
-  summarize(
-    interval_gpa = conf_interval(corr_gpa) %>%
-      rename(c(gpa_lo="int_lo", gpa_hi="int_hi")),
-    interval_sat = conf_interval(corr_sat) %>%
-      rename(c(sat_lo="int_lo", sat_hi="int_hi"))
-  ) %>% 
-  unnest()
+  )
+  # summarize(
+  #   interval_gpa = conf_interval(corr_gpa) %>%
+  #     rename(c(gpa_lo="int_lo", gpa_hi="int_hi")),
+  #   interval_sat = conf_interval(corr_sat) %>%
+  #     rename(c(sat_lo="int_lo", sat_hi="int_hi"))
+  # ) %>%
+  # unnest()
 
 ```
 

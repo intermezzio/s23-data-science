@@ -1,7 +1,7 @@
 ---
 title: "Massachusetts Highway Stops"
-author: "(Your name here)"
-date: 2020-
+author: "Andrew Mascillaro"
+date: 2023-04-24
 output:
   github_document:
     toc: true
@@ -37,6 +37,7 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 ```{r setup}
 library(tidyverse)
 library(broom)
+library(tools)
 ```
 
 # Setup
@@ -48,7 +49,7 @@ library(broom)
 
 ```{r q1-task}
 ## TODO: Download the data, move to your data folder, and load it
-filename <- NA_character_
+filename <- "data/yg821jf8611_ma_statewide_2020_04_01.rds"
 df_data <- readRDS(filename)
 ```
 
@@ -56,6 +57,10 @@ df_data <- readRDS(filename)
 <!-- -------------------------------------------------- -->
 
 ### __q2__ Do your "first checks" on the dataset. What are the basic facts about this dataset?
+
+```{r}
+df_data %>% summary()
+```
 
 
 Note that we have both a `subject_race` and `race_Raw` column. There are a few possibilities as to what `race_Raw` represents:
@@ -69,14 +74,20 @@ Let's try to distinguish between these two possibilities.
 
 ```{r q3-task}
 ## TODO: Determine the factor levels for subject_race and raw_Race
+df_data %>% pull(subject_race) %>% unique()
+df_data %>% pull(raw_Race) %>% unique()
 ```
 
 **Observations**:
 
 - What are the unique values for `subject_race`?
+  - white, hispanic, black, aapi, other, NA, and unknown
 - What are the unique values for `raw_Race`?
+  - white, hispanic, black, aapi, middle eastern / south asian, american indian, NA, None, A
 - What is the overlap between the two sets?
+  - white, hispanic, black, aapi, other/na
 - What is the difference between the two sets?
+  - middle eastern, american indian
 
 ### __q4__ Check whether `subject_race` and `raw_Race` match for a large fraction of cases. Which of the two hypotheses above is most likely, based on your results?
 
@@ -84,6 +95,28 @@ Let's try to distinguish between these two possibilities.
 
 ```{r q4-task}
 ## TODO: Devise your own way to test the hypothesis posed above.
+simplify_race = function(str_col) {
+  str_col %>% 
+    as.character() %>% 
+    replace(str_col %in% c("unknown", "A", "NA"), "NA") %>%
+    # replace(c("unknown", NA, "A", NA, "NA", NA)) %>% 
+    str_to_lower()
+}
+
+df_data %>% 
+  drop_na(raw_Race) %>% 
+  drop_na(subject_race) %>% 
+  mutate(
+    is_same_race = simplify_race(raw_Race) == simplify_race(subject_race)
+  ) %>%
+  drop_na() %>% 
+  summarize(
+    total = n(),
+    num_same = sum(is_same_race),
+    num_diff = total - num_same,
+    perc_same = num_same / total
+  )
+
 ```
 
 **Observations**
@@ -95,7 +128,9 @@ Between the two hypotheses:
 
 which is most plausible, based on your results?
 
-- (Your response here)
+- `race_Raw` is most likely an unprocessed version of `subject_race` as the
+  percentage that is the same is extremely high, above 96 percent, so it
+  likely refers to the same person as the `subject_race`.
 
 ## Vis
 <!-- ------------------------- -->
@@ -103,6 +138,49 @@ which is most plausible, based on your results?
 ### __q5__ Compare the *arrest rate*---the fraction of total cases in which the subject was arrested---across different factors. Create as many visuals (or tables) as you need, but make sure to check the trends across all of the `subject` variables. Answer the questions under *observations* below.
 
 (Note: Create as many chunks and visuals as you need)
+
+```{r}
+make_county_name = function(county_col) {
+  county_col %>% 
+    toTitleCase() %>% 
+    paste("County")
+}
+
+mass_counties <-
+  map_data("county") %>% 
+    filter(region == "massachusetts") %>% 
+    mutate(county_name = make_county_name(subregion))
+
+theme_maps <-
+  theme(legend.position="right",
+    axis.line=element_blank(),
+    axis.text=element_blank(),
+    axis.ticks=element_blank(),
+    axis.title=element_blank(),
+    panel.background=element_blank(),
+    panel.border=element_blank(),
+    panel.grid=element_blank()
+  )
+```
+
+```{r}
+df_data %>% 
+  group_by(county_name) %>% 
+  summarize(
+    c_cases = n(),
+    c_checked = sum()
+  ) %>% 
+  left_join(
+    mass_counties,
+    by = "county_name"
+  ) %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = total)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis") +
+  theme_maps
+  # ggplot(aes())
+```
 
 
 **Observations**:

@@ -380,14 +380,21 @@ pr_level <- 0.8
 #        make a recommendation on a *dependable range* of values for T_norm
 #        at the point `df_design`
 fit_q6 <- df_train %>%
-  lm(formula = T_norm ~ T_f) %>% 
-  
-  
-df_intervals <-
-  df_train %>%
-  add_uncertainties(fit_simple, interval = "confidence", prefix = "ci") %>%
-  add_uncertainties(fit_simple, interval = "prediction", prefix = "pi")
+  lm(formula = T_norm ~ x + L + W + U_0)
 
+ans_q6 <- fit_q6 %>% 
+  predict(df_design)
+
+ans_q6
+```
+
+
+```{r q6-task}
+df_intervals <-
+  df_design %>%
+  add_uncertainties(fit_q6, interval = "prediction", prefix = "pi", level=pr_level)
+
+df_intervals
 ```
 
 **Recommendation**:
@@ -395,11 +402,12 @@ df_intervals <-
 - How much do you trust your model? Why?
   - (Your response here)
 - What kind of interval---confidence or prediction---would you use for this task, and why?
-  - (Your response here)
+  - This is a prediction interval because I'm predicting a general distribution of values,
+    not just a specific value.
 - What fraction of validation cases lie within the interval you predict? How does this compare with `pr_level`?
   - (Your response here)
 - What interval for `T_norm` would you recommend the design team to plan around?
-  - (Your response here)
+  - I would recommend planning around 1.45 and 2.30 for `T_norm`
 - Are there any other recommendations you would provide?
   - (Your response here)
 
