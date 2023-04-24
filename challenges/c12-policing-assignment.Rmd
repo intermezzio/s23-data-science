@@ -182,9 +182,12 @@ df_data %>%
 ```
 
 ```{r}
-# df_data %>% 
-#   filter() %>% 
-#   ggplot(aes(x = age))
+df_data %>%
+  filter(arrest_made == TRUE) %>%
+  group_by(subject_race) %>% 
+  ggplot(aes(x = subject_age, fill = subject_race)) +
+  geom_histogram()
+  
 ```
 
 

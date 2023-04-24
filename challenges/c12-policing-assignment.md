@@ -341,10 +341,18 @@ df_data %>%
 ```
 
 ``` r
-# df_data %>% 
-#   filter() %>% 
-#   ggplot(aes(x = age))
+df_data %>%
+  filter(arrest_made == TRUE) %>%
+  group_by(subject_race) %>% 
+  ggplot(aes(x = subject_age, fill = subject_race)) +
+  geom_histogram()
 ```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2025 rows containing non-finite values (`stat_bin()`).
+
+![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 **Observations**:
 
