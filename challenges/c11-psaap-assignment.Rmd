@@ -389,7 +389,7 @@ ans_q6
 ```
 
 
-```{r q6-task}
+```{r q6-task-pt2}
 df_intervals <-
   df_design %>%
   add_uncertainties(fit_q6, interval = "prediction", prefix = "pi", level=pr_level)
@@ -397,19 +397,39 @@ df_intervals <-
 df_intervals
 ```
 
+```{r}
+df_check <- df_validate %>% 
+  arrange(desc(T_norm)) %>% 
+  mutate(
+    in_range = (df_intervals$pi_lwr < T_norm) & (T_norm < df_intervals$pi_upr)
+  ) %>% 
+  summarize(
+    total = n(),
+    num_in_range = sum(in_range),
+    perc_in_range = num_in_range / total
+  )
+
+df_check
+```
+
+
 **Recommendation**:
 
 - How much do you trust your model? Why?
-  - (Your response here)
+  - Because the model does not have a significant amount of data, especially in
+    the range of parameters like `x` and `U_0` that are requested, this may not
+    be the best model for predicting an interval.
 - What kind of interval---confidence or prediction---would you use for this task, and why?
   - This is a prediction interval because I'm predicting a general distribution of values,
     not just a specific value.
 - What fraction of validation cases lie within the interval you predict? How does this compare with `pr_level`?
-  - (Your response here)
+  - 3/60, which is way less than pr_level
 - What interval for `T_norm` would you recommend the design team to plan around?
-  - I would recommend planning around 1.45 and 2.30 for `T_norm`
+  - I would not be confident in recommending an interval for `T_norm` based on
+    the lack of a conclusion from the analysis above.
 - Are there any other recommendations you would provide?
-  - (Your response here)
+  - I would recommend adding other parameters into the model or collecting more
+    data that's similar to the preferred use case for modeling `T_norm`.
 
 *Bonus*: One way you could take this analysis further is to recommend which other variables the design team should tightly control. You could do this by fixing values in `df_design` and adding them to the model. An exercise you could carry out would be to systematically test the variables to see which ones the design team should more tightly control.
 

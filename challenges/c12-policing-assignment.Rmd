@@ -98,18 +98,22 @@ df_data %>% pull(raw_Race) %>% unique()
 simplify_race = function(str_col) {
   str_col %>% 
     as.character() %>% 
-    replace(str_col %in% c("unknown", "A", "NA"), "NA") %>%
-    # replace(c("unknown", NA, "A", NA, "NA", NA)) %>% 
+    str_replace_all("^A$", "unknown") %>%
+    str_replace_all("None - for no operator present citations only", "unknown") %>%
+    replace_na("unknown") %>%
     str_to_lower()
 }
 
-df_data %>% 
-  drop_na(raw_Race) %>% 
-  drop_na(subject_race) %>% 
+df_clean <- df_data %>% 
   mutate(
-    is_same_race = simplify_race(raw_Race) == simplify_race(subject_race)
+    raw_Race = simplify_race(raw_Race),
+    subject_race = simplify_race(subject_race)
+  )
+
+df_clean %>%
+  mutate(
+    is_same_race = raw_Race == subject_race
   ) %>%
-  drop_na() %>% 
   summarize(
     total = n(),
     num_same = sum(is_same_race),
@@ -129,7 +133,7 @@ Between the two hypotheses:
 which is most plausible, based on your results?
 
 - `race_Raw` is most likely an unprocessed version of `subject_race` as the
-  percentage that is the same is extremely high, above 96 percent, so it
+  percentage that is the same is extremely high, about 95 percent, so it
   likely refers to the same person as the `subject_race`.
 
 ## Vis
@@ -164,7 +168,7 @@ theme_maps <-
 ```
 
 ```{r}
-df_data %>% 
+df_clean %>% 
   group_by(county_name) %>% 
   summarize(
     total = n()
@@ -178,15 +182,24 @@ df_data %>%
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_continuous(type = "viridis") +
   theme_maps
-  # ggplot(aes())
 ```
-
 ```{r}
-df_data %>%
-  filter(arrest_made == TRUE) %>%
+df_clean %>%
   group_by(subject_race) %>% 
+  filter(arrest_made == TRUE) %>%
   ggplot(aes(x = subject_age, fill = subject_race)) +
   geom_histogram()
+```
+
+
+```{r}
+df_clean %>%
+  group_by(subject_race) %>% 
+  summarize(
+    arrest_perc = mean(arrest_made)
+  ) %>% 
+  ggplot(aes(x = arrest_made, y = subject_race)) +
+  geom_bar()
   
 ```
 
