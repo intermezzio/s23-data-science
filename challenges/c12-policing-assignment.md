@@ -244,18 +244,25 @@ hypothesis test.
 simplify_race = function(str_col) {
   str_col %>% 
     as.character() %>% 
-    replace(str_col %in% c("unknown", "A", "NA"), "NA") %>%
-    # replace(c("unknown", NA, "A", NA, "NA", NA)) %>% 
+    str_replace_all("^A$", "unknown") %>%
+    str_replace_all("None - for no operator present citations only", "unknown") %>%
+    replace_na("unknown") %>%
     str_to_lower()
 }
 
-df_data %>% 
-  drop_na(raw_Race) %>% 
-  drop_na(subject_race) %>% 
+df_clean <- df_data %>% 
   mutate(
-    is_same_race = simplify_race(raw_Race) == simplify_race(subject_race)
+    raw_Race = simplify_race(raw_Race),
+    subject_race = simplify_race(subject_race)
+  ) %>% 
+  rename(
+    raw_race = raw_Race
+  )
+
+df_clean %>%
+  mutate(
+    is_same_race = raw_race == subject_race
   ) %>%
-  drop_na() %>% 
   summarize(
     total = n(),
     num_same = sum(is_same_race),
@@ -265,9 +272,9 @@ df_data %>%
 ```
 
     ## # A tibble: 1 × 4
-    ##   total num_same num_diff perc_same
-    ##   <int>    <int>    <int>     <dbl>
-    ## 1 15866    15321      545     0.966
+    ##     total num_same num_diff perc_same
+    ##     <int>    <int>    <int>     <dbl>
+    ## 1 3416238  3238388   177850     0.948
 
 **Observations**
 
@@ -279,7 +286,7 @@ Between the two hypotheses:
 which is most plausible, based on your results?
 
 - `race_Raw` is most likely an unprocessed version of `subject_race` as
-  the percentage that is the same is extremely high, above 96 percent,
+  the percentage that is the same is extremely high, about 95 percent,
   so it likely refers to the same person as the `subject_race`.
 
 ## Vis
@@ -315,7 +322,7 @@ theme_maps <-
 ```
 
 ``` r
-df_data %>% 
+df_clean %>% 
   group_by(county_name) %>% 
   summarize(
     total = n()
@@ -337,13 +344,9 @@ df_data %>%
 ![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
-  # ggplot(aes())
-```
-
-``` r
-df_data %>%
-  filter(arrest_made == TRUE) %>%
+df_clean %>%
   group_by(subject_race) %>% 
+  filter(arrest_made == TRUE) %>%
   ggplot(aes(x = subject_age, fill = subject_race)) +
   geom_histogram()
 ```
@@ -353,6 +356,24 @@ df_data %>%
     ## Warning: Removed 2025 rows containing non-finite values (`stat_bin()`).
 
 ![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+df_clean %>%
+  drop_na(arrest_made, subject_sex) %>% 
+  group_by(subject_race, subject_sex) %>% 
+  summarize(
+    arrest_perc = sum(arrest_made) / n()
+  ) %>% 
+  ggplot(aes(x = arrest_perc, y = subject_race)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ subject_sex, nrow = 2)
+```
+
+    ## `summarise()` has grouped output by 'subject_race'. You can override using the
+    ## `.groups` argument.
+
+![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 **Observations**:
 
@@ -401,9 +422,9 @@ fit_q6 %>% tidy()
 **Observations**:
 
 - Which `subject_race` levels are included in fitting the model?
-  - (Your response here)
+  - White, black, hispanic
 - Which `subject_race` levels have terms in the model?
-  - (Your response here)
+  - White, hispanic
 
 You should find that each factor in the model has a level *missing* in
 its set of terms. This is because R represents factors against a
@@ -433,21 +454,49 @@ level. Therefore we can use
 ``` r
 ## TODO: Re-fit the logistic regression, but set "white" as the reference
 ## level for subject_race
-
-# fit_q7 %>% tidy()
+fit_q7 <-
+  glm(
+    formula = arrest_made ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        !is.na(arrest_made),
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white")
+      ),
+    family = "binomial"
+  )
+fit_q7 %>% tidy()
 ```
+
+    ## # A tibble: 5 × 5
+    ##   term                 estimate std.error statistic   p.value
+    ##   <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    ## 1 (Intercept)           -3.05    0.0109      -279.  0        
+    ## 2 subject_age           -0.0142  0.000280     -50.5 0        
+    ## 3 subject_raceblack      0.380   0.0103        37.0 3.12e-299
+    ## 4 subject_racehispanic   0.893   0.00859      104.  0        
+    ## 5 subject_sexfemale     -0.755   0.00910      -83.0 0
 
 **Observations**:
 
 - Which `subject_race` level has the highest probability of being
   arrested, according to this model? Which has the lowest probability?
-  - (Your response here)
+  - Black is highest, white is lowest
 - What could explain this difference in probabilities of arrest across
   race? List **multiple** possibilities.
-  - (Your response here)
+  - There are a few possibilities, including direct racial bias,
+    confounded socioeconomic status (i.e. poorer people get arrested
+    more often and are disproportionately minority races), confounded
+    neighborhood (more crime takes place in neighborhoods that have more
+    crime and more disproportionately high percentages of minority
+    races)
 - Look at the sent of variables in the dataset; do any of the columns
   relate to a potential explanation you listed?
-  - (Your response here)
+  - Search basis combined with arrest rate may help determine if racial
+    bias was in play, to see if people with minority races were more
+    likely to be searched for “probable cause” than white counterparts.
 
 One way we can explain differential arrest rates is to include some
 measure indicating the presence of an arrestable offense. We’ll do this
@@ -458,23 +507,107 @@ in a particular way in the next task.
 ``` r
 ## TODO: Repeat the modeling above, but control for whether contraband was found
 ## during the police stop
-# fit_q8 %>% tidy()
+fit_q8 <-
+  glm(
+    formula = arrest_made ~ subject_age + subject_race + subject_sex + contraband_found,
+    data = df_data %>%
+      filter(
+        !is.na(arrest_made),
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white")
+      ),
+    family = "binomial"
+  )
+fit_q8 %>% tidy()
 ```
+
+    ## # A tibble: 6 × 5
+    ##   term                 estimate std.error statistic   p.value
+    ##   <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    ## 1 (Intercept)           -1.72    0.0339      -50.8  0        
+    ## 2 subject_age            0.0225  0.000866     26.0  2.19e-149
+    ## 3 subject_raceblack     -0.0511  0.0270       -1.90 5.80e-  2
+    ## 4 subject_racehispanic   0.221   0.0237        9.31 1.32e- 20
+    ## 5 subject_sexfemale     -0.306   0.0257      -11.9  1.06e- 32
+    ## 6 contraband_foundTRUE   0.609   0.0192       31.7  4.29e-221
 
 **Observations**:
 
 - How does controlling for found contraband affect the `subject_race`
   terms in the model?
-  - (Your response here)
+  - It shows that the presence of contraband is a stronger indicator of
+    arrest rate, but there’s still a similar correlation in arrest rate
+    based on race for hispanic people even when controlling for found
+    contraband.
 - What does the *finding of contraband* tell us about the stop? What
   does it *not* tell us about the stop?
-  - (Your response here)
+  - This tells us that finding contraband is a stronger indicator of
+    arrest rate than race, but it does not tell us that there is no
+    racial bias.
 
 ### **q9** Go deeper: Pose at least one more question about the data and fit at least one more model in support of answering that question.
 
+Do different counties have different arrest rates?
+
+``` r
+fit_q9 <-
+  glm(
+    formula = arrest_made ~ subject_age + subject_race + subject_sex + county_name,
+    data = df_data %>%
+      filter(
+        !is.na(arrest_made),
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white"),
+        county_name = relevel(factor(county_name), ref = "Norfolk County")
+      ),
+    family = "binomial"
+  )
+fit_q9 %>% tidy()
+```
+
+    ## # A tibble: 18 × 5
+    ##    term                         estimate std.error statistic  p.value
+    ##    <chr>                           <dbl>     <dbl>     <dbl>    <dbl>
+    ##  1 (Intercept)                   -3.33    0.0172     -194.   0       
+    ##  2 subject_age                   -0.0128  0.000282    -45.5  0       
+    ##  3 subject_raceblack              0.420   0.0104       40.2  0       
+    ##  4 subject_racehispanic           0.882   0.00875     101.   0       
+    ##  5 subject_sexfemale             -0.753   0.00913     -82.6  0       
+    ##  6 county_nameBarnstable County   0.189   0.0258        7.33 2.22e-13
+    ##  7 county_nameBerkshire County   -0.155   0.0266       -5.84 5.36e- 9
+    ##  8 county_nameBristol County      0.843   0.0173       48.7  0       
+    ##  9 county_nameDukes County        0.253   0.0965        2.62 8.75e- 3
+    ## 10 county_nameEssex County        0.682   0.0168       40.7  0       
+    ## 11 county_nameFranklin County    -0.275   0.0299       -9.23 2.82e-20
+    ## 12 county_nameHampden County      0.238   0.0167       14.3  2.94e-46
+    ## 13 county_nameHampshire County   -0.257   0.0312       -8.24 1.67e-16
+    ## 14 county_nameMiddlesex County    0.248   0.0164       15.2  7.47e-52
+    ## 15 county_nameNantucket County    0.753   0.0640       11.8  6.34e-32
+    ## 16 county_namePlymouth County     0.331   0.0201       16.5  3.32e-61
+    ## 17 county_nameSuffolk County     -0.0932  0.0169       -5.51 3.55e- 8
+    ## 18 county_nameWorcester County    0.158   0.0157       10.1  6.63e-24
+
+The baseline county is Norfolk County because that’s where Olin is. No
+other logic necessary :) (don’t dock points for this)
+
 **Observations**:
 
-- Document your question and findings
+- Which counties have higher arrest rates?
+  - Bristol County and Essex county have higher arrest rates
+  - Barnstable and Dukes County are similar but slightly higher
+  - Berkshire County is lower
+- Can I make any conclusions about the counties themselves from this?
+  - Further knowledge of Massachusetts would be helpful to know what
+    makes these counties different from each other (ideally stats on
+    income, etc) but there is a reason to look more into why the arrest
+    rates are presumably higher and lower depending on county.
+- What other data would help make further conclusions?
+  - More fine-grained data about location, like city, neighborhood, and
+    time of day
 
 ## Further Reading
 
