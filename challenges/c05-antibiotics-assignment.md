@@ -68,7 +68,19 @@ library(tidyverse)
 
 ``` r
 library(ggrepel)
+library(scales)
 ```
+
+    ## 
+    ## Attaching package: 'scales'
+    ## 
+    ## The following object is masked from 'package:purrr':
+    ## 
+    ##     discard
+    ## 
+    ## The following object is masked from 'package:readr':
+    ## 
+    ##     col_factor
 
 *Background*: The data\[1\] we study in this challenge report the
 [*minimum inhibitory
@@ -159,9 +171,12 @@ df_antibiotics %>%
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
   ggplot(aes(x = antibiotic, y = MIC)) +
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) + 
-  geom_point(aes(color = gram)) +
+  geom_point(aes(color = bacteria_gram)) +
   scale_y_continuous(trans='log10')
 ```
 
@@ -177,15 +192,28 @@ Note that your visual must be *qualitatively different* from *all* of
 your other visuals.
 
 ``` r
+log_tenth <- trans_new(
+  name = "log10_0.1",
+  transform = (\(x) 1 + log10(x)),
+  inverse = (\(x) 10 ^ (x - 1)),
+  log_breaks(base = 10),
+  domain = c(1e-100, Inf)
+)
+```
+
+``` r
 df_antibiotics %>% 
   pivot_longer(
     names_to = "antibiotic",
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
-  ggplot(aes(x = bacteria, y = MIC, fill = gram)) +
-  geom_col(aes(), position = "stack") +
-  scale_y_continuous(trans='log10') +
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
+  ggplot(aes(x = bacteria_gram, y = MIC)) +
+  geom_col(position = "stack") +
+  scale_y_continuous(trans=log_tenth) +
   coord_flip() +
   facet_wrap(~antibiotic)
 ```
@@ -203,8 +231,9 @@ your other visuals.
 
 ``` r
 df_antibiotics %>% 
-  ggplot(aes(x = neomycin, y = streptomycin)) +
+  ggplot(aes(x = neomycin, y = streptomycin, label = bacteria)) +
   geom_point() +
+  geom_text_repel() +
   scale_x_continuous(trans='log10') +
   scale_y_continuous(trans='log10')
 ```
@@ -232,6 +261,7 @@ df_antibiotics %>%
   slice(1) %>% 
   ggplot(aes(x = bacteria, y = MIC, fill = antibiotic)) +
   geom_col() +
+  scale_y_continuous(trans=log_tenth) +
   coord_flip()
 ```
 
@@ -253,10 +283,13 @@ df_antibiotics %>%
     values_to = "MIC",
     cols = ends_with("in")
   ) %>% 
+  mutate(
+    bacteria_gram = paste(bacteria, "-", gram)
+  ) %>% 
   arrange(MIC) %>% 
   group_by(bacteria) %>% 
   slice(1) %>% 
-  ggplot(aes(x = antibiotic, fill = gram)) +
+  ggplot(aes(x = antibiotic, fill = bacteria_gram)) +
   geom_bar()
 ```
 
@@ -309,9 +342,10 @@ and in 1984 *Streptococcus fecalis* was renamed *Enterococcus fecalis*
 *Observations*
 
 - What is your response to the question above?
-  - This is likely because Streptococcus pneumoniae has a very high MIC
-    with Streptomycin (on the order of 10^1), a quality shared by most
-    Streptococcus bacteria.
+  - Streptococcus pneumoniae has a very high MIC with Streptomycin (on
+    the order of 10^1), a quality shared by most Streptococcus bacteria.
+  - This high MIC value may be indicative of Streptococcus pneumoniae’s
+    similarity to other Streptococcus bacteria
 - Which of your visuals above (1 through 5) is **most effective** at
   helping to answer this question?
   - Visual 2 was most helpful.

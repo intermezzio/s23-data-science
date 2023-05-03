@@ -117,7 +117,7 @@ df_antibiotics %>%
   mutate(
     bacteria_gram = paste(bacteria, "-", gram)
   ) %>% 
-  ggplot(aes(x = bacteria_gram, y = MIC_adj)) +
+  ggplot(aes(x = bacteria_gram, y = MIC)) +
   geom_col(position = "stack") +
   scale_y_continuous(trans=log_tenth) +
   coord_flip() +
@@ -132,8 +132,9 @@ Note that your visual must be *qualitatively different* from *all* of your other
 
 ```{r q1.3}
 df_antibiotics %>% 
-  ggplot(aes(x = neomycin, y = streptomycin)) +
+  ggplot(aes(x = neomycin, y = streptomycin, label = bacteria)) +
   geom_point() +
+  geom_text_repel() +
   scale_x_continuous(trans='log10') +
   scale_y_continuous(trans='log10')
 
@@ -218,9 +219,11 @@ In 1974 *Diplococcus pneumoniae* was renamed *Streptococcus pneumoniae*, and in 
 *Observations*
 
 - What is your response to the question above?
-  - This is likely because Streptococcus pneumoniae has a very high MIC with
+  - Streptococcus pneumoniae has a very high MIC with
   Streptomycin (on the order of 10^1), a quality shared by most Streptococcus
   bacteria.
+  - This high MIC value may be indicative of Streptococcus pneumoniae's
+    similarity to other Streptococcus bacteria
 - Which of your visuals above (1 through 5) is **most effective** at helping to answer this question?
   - Visual 2 was most helpful.
 - Why?
