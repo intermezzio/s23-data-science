@@ -3,38 +3,30 @@ Aluminum Data
 Andrew Mascillaro
 2023-01-22
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-- <a href="#loading-and-wrangle" id="toc-loading-and-wrangle">Loading and
-  Wrangle</a>
-  - <a
-    href="#q1-tidy-df_stang-to-produce-df_stang_long-you-should-have-column-names-thick-alloy-angle-e-nu-make-sure-the-angle-variable-is-of-correct-type-filter-out-any-invalid-values"
-    id="toc-q1-tidy-df_stang-to-produce-df_stang_long-you-should-have-column-names-thick-alloy-angle-e-nu-make-sure-the-angle-variable-is-of-correct-type-filter-out-any-invalid-values"><strong>q1</strong>
-    Tidy <code>df_stang</code> to produce <code>df_stang_long</code>. You
-    should have column names <code>thick, alloy, angle, E, nu</code>. Make
-    sure the <code>angle</code> variable is of correct type. Filter out any
-    invalid values.</a>
-- <a href="#eda" id="toc-eda">EDA</a>
-  - <a href="#initial-checks" id="toc-initial-checks">Initial checks</a>
-    - <a
-      href="#q2-perform-a-basic-eda-on-the-aluminum-data-without-visualization-use-your-analysis-to-answer-the-questions-under-observations-below-in-addition-add-your-own-specific-question-that-youd-like-to-answer-about-the-datayoull-answer-it-below-in-q3"
-      id="toc-q2-perform-a-basic-eda-on-the-aluminum-data-without-visualization-use-your-analysis-to-answer-the-questions-under-observations-below-in-addition-add-your-own-specific-question-that-youd-like-to-answer-about-the-datayoull-answer-it-below-in-q3"><strong>q2</strong>
-      Perform a basic EDA on the aluminum data <em>without visualization</em>.
-      Use your analysis to answer the questions under <em>observations</em>
-      below. In addition, add your own <em>specific</em> question that you’d
-      like to answer about the data—you’ll answer it below in q3.</a>
-  - <a href="#visualize" id="toc-visualize">Visualize</a>
-    - <a
-      href="#q3-create-a-visualization-to-investigate-your-question-from-q2-above-can-you-find-an-answer-to-your-question-using-the-dataset-would-you-need-additional-information-to-answer-your-question"
-      id="toc-q3-create-a-visualization-to-investigate-your-question-from-q2-above-can-you-find-an-answer-to-your-question-using-the-dataset-would-you-need-additional-information-to-answer-your-question"><strong>q3</strong>
-      Create a visualization to investigate your question from q2 above. Can
-      you find an answer to your question using the dataset? Would you need
-      additional information to answer your question?</a>
-    - <a href="#q4-consider-the-following-statement"
-      id="toc-q4-consider-the-following-statement"><strong>q4</strong>
-      Consider the following statement:</a>
-- <a href="#references" id="toc-references">References</a>
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Due Date](#due-date)
+- [Loading and Wrangle](#loading-and-wrangle)
+  - [**q1** Tidy `df_stang` to produce `df_stang_long`. You should have
+    column names `thick, alloy, angle, E, nu`. Make sure the `angle`
+    variable is of correct type. Filter out any invalid
+    values.](#q1-tidy-df_stang-to-produce-df_stang_long-you-should-have-column-names-thick-alloy-angle-e-nu-make-sure-the-angle-variable-is-of-correct-type-filter-out-any-invalid-values)
+- [EDA](#eda)
+  - [Initial checks](#initial-checks)
+    - [**q2** Perform a basic EDA on the aluminum data *without
+      visualization*. Use your analysis to answer the questions under
+      *observations* below. In addition, add your own *specific*
+      question that you’d like to answer about the data—you’ll answer it
+      below in
+      q3.](#q2-perform-a-basic-eda-on-the-aluminum-data-without-visualization-use-your-analysis-to-answer-the-questions-under-observations-below-in-addition-add-your-own-specific-question-that-youd-like-to-answer-about-the-datayoull-answer-it-below-in-q3)
+  - [Visualize](#visualize)
+    - [**q3** Create a visualization to investigate your question from
+      q2 above. Can you find an answer to your question using the
+      dataset? Would you need additional information to answer your
+      question?](#q3-create-a-visualization-to-investigate-your-question-from-q2-above-can-you-find-an-answer-to-your-question-using-the-dataset-would-you-need-additional-information-to-answer-your-question)
+    - [**q4** Consider the following
+      statement:](#q4-consider-the-following-statement)
+- [References](#references)
 
 *Purpose*: When designing structures such as bridges, boats, and planes,
 the design team needs data about *material properties*. Often when we
@@ -349,8 +341,12 @@ df_stang_long %>%
 **Observations**:
 
 - Does this graph support or contradict the claim above?
-  - This supports the above claim, as thicker blocks have a higher
-    modulus of elasticity.
+  - This seems to contradict the claim above.
+  - Elasticity is similar for thicknesses less than or equal to 0.064
+    and lower for the 0.081 thickness.
+  - This change in elasticity with thickness indicates that thickness
+    affects elasticity and therefore it’s not an intensive property of
+    the metal.
 
 # References
 

@@ -184,8 +184,11 @@ df_stang_long %>%
 **Observations**:
 
 - Does this graph support or contradict the claim above?
-  - This supports the above claim, as thicker blocks have a higher modulus of
-  elasticity.
+  - This seems to contradict the claim above.
+  - Elasticity is similar for thicknesses less than or equal to 0.064 and
+    lower for the 0.081 thickness.
+  - This change in elasticity with thickness indicates that thickness affects
+    elasticity and therefore it's not an intensive property of the metal.
 
 # References
 <!-- -------------------------------------------------- -->
