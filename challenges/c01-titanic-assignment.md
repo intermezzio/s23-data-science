@@ -3,43 +3,33 @@ RMS Titanic
 Andrew Mascillaro
 2023-01-21
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-- <a href="#first-look" id="toc-first-look">First Look</a>
-  - <a
-    href="#q1-perform-a-glimpse-of-df_titanic-what-variables-are-in-this-dataset"
-    id="toc-q1-perform-a-glimpse-of-df_titanic-what-variables-are-in-this-dataset"><strong>q1</strong>
-    Perform a glimpse of <code>df_titanic</code>. What variables are in this
-    dataset?</a>
-  - <a
-    href="#q2-skim-the-wikipedia-article-on-the-rms-titanic-and-look-for-a-total-count-of-souls-aboard-compare-against-the-total-computed-below-are-there-any-differences-are-those-differences-large-or-small-what-might-account-for-those-differences"
-    id="toc-q2-skim-the-wikipedia-article-on-the-rms-titanic-and-look-for-a-total-count-of-souls-aboard-compare-against-the-total-computed-below-are-there-any-differences-are-those-differences-large-or-small-what-might-account-for-those-differences"><strong>q2</strong>
-    Skim the Wikipedia article on the RMS Titanic, and look for a total
-    count of souls aboard. Compare against the total computed below. Are
-    there any differences? Are those differences large or small? What might
-    account for those differences?</a>
-  - <a
-    href="#q3-create-a-plot-showing-the-count-of-persons-who-did-survive-along-with-aesthetics-for-class-and-sex-document-your-observations-below"
-    id="toc-q3-create-a-plot-showing-the-count-of-persons-who-did-survive-along-with-aesthetics-for-class-and-sex-document-your-observations-below"><strong>q3</strong>
-    Create a plot showing the count of persons who <em>did</em> survive,
-    along with aesthetics for <code>Class</code> and <code>Sex</code>.
-    Document your observations below.</a>
-- <a href="#deeper-look" id="toc-deeper-look">Deeper Look</a>
-  - <a
-    href="#q4-replicate-your-visual-from-q3-but-display-prop-in-place-of-n-document-your-observations-and-note-any-newdifferent-observations-you-make-in-comparison-with-q3-is-there-anything-fishy-in-your-plot"
-    id="toc-q4-replicate-your-visual-from-q3-but-display-prop-in-place-of-n-document-your-observations-and-note-any-newdifferent-observations-you-make-in-comparison-with-q3-is-there-anything-fishy-in-your-plot"><strong>q4</strong>
-    Replicate your visual from q3, but display <code>Prop</code> in place of
-    <code>n</code>. Document your observations, and note any new/different
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Due Date](#due-date)
+- [First Look](#first-look)
+  - [**q1** Perform a glimpse of `df_titanic`. What variables are in
+    this
+    dataset?](#q1-perform-a-glimpse-of-df_titanic-what-variables-are-in-this-dataset)
+  - [**q2** Skim the Wikipedia article on the RMS Titanic, and look for
+    a total count of souls aboard. Compare against the total computed
+    below. Are there any differences? Are those differences large or
+    small? What might account for those
+    differences?](#q2-skim-the-wikipedia-article-on-the-rms-titanic-and-look-for-a-total-count-of-souls-aboard-compare-against-the-total-computed-below-are-there-any-differences-are-those-differences-large-or-small-what-might-account-for-those-differences)
+  - [**q3** Create a plot showing the count of persons who *did*
+    survive, along with aesthetics for `Class` and `Sex`. Document your
+    observations
+    below.](#q3-create-a-plot-showing-the-count-of-persons-who-did-survive-along-with-aesthetics-for-class-and-sex-document-your-observations-below)
+- [Deeper Look](#deeper-look)
+  - [**q4** Replicate your visual from q3, but display `Prop` in place
+    of `n`. Document your observations, and note any new/different
     observations you make in comparison with q3. Is there anything
-    <em>fishy</em> in your plot?</a>
-  - <a
-    href="#q5-create-a-plot-showing-the-group-proportion-of-occupants-who-did-survive-along-with-aesthetics-for-class-sex-and-age-document-your-observations-below"
-    id="toc-q5-create-a-plot-showing-the-group-proportion-of-occupants-who-did-survive-along-with-aesthetics-for-class-sex-and-age-document-your-observations-below"><strong>q5</strong>
-    Create a plot showing the group-proportion of occupants who <em>did</em>
-    survive, along with aesthetics for <code>Class</code>, <code>Sex</code>,
-    <em>and</em> <code>Age</code>. Document your observations below.</a>
-- <a href="#notes" id="toc-notes">Notes</a>
+    *fishy* in your
+    plot?](#q4-replicate-your-visual-from-q3-but-display-prop-in-place-of-n-document-your-observations-and-note-any-newdifferent-observations-you-make-in-comparison-with-q3-is-there-anything-fishy-in-your-plot)
+  - [**q5** Create a plot showing the group-proportion of occupants who
+    *did* survive, along with aesthetics for `Class`, `Sex`, *and*
+    `Age`. Document your observations
+    below.](#q5-create-a-plot-showing-the-group-proportion-of-occupants-who-did-survive-along-with-aesthetics-for-class-sex-and-age-document-your-observations-below)
+- [Notes](#notes)
 
 *Purpose*: Most datasets have at least a few variables. Part of our task
 in analyzing a dataset is to understand trends as they vary across these
@@ -227,7 +217,9 @@ df_prop %>%
 
 **Observations**:
 
-- The first class and female crewmates are more likely to survive
+- Female crewmates were more likely to survive than male crewmates
+- First and second class people were more likely to survive than third
+  class people
 - Is there anything *fishy* going on in your plot?
   - Many proportions show up as 100% because adult and child props are
     added.

@@ -126,7 +126,9 @@ df_prop %>%
 
 **Observations**:
 
-- The first class and female crewmates are more likely to survive
+- Female crewmates were more likely to survive than male crewmates
+- First and second class people were more likely to survive than third class
+  people
 - Is there anything *fishy* going on in your plot?
   - Many proportions show up as 100% because adult and child props are added.
 
