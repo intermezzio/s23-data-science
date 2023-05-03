@@ -101,6 +101,7 @@ You may encounter difficulties in visualizing these data; if so document your ch
 gapminder %>% 
   filter(year == year_min) %>% 
   ggplot(aes(x = continent, y = gdpPercap)) +
+  scale_y_continuous(trans="log10") +
   geom_violin()
 ```
 
@@ -109,12 +110,14 @@ gapminder %>%
 gapminder %>% 
   filter(year == year_min) %>% 
   ggplot(aes(x = continent, y = gdpPercap)) +
+  scale_y_continuous(trans="log10") +
   geom_boxplot()
 ```
 
 **Observations**:
 
-- GDP per capita within a continent is very right skewed.
+- There are outliers with higher GDP per capita than the average but no outliers
+  with a lower GDP per capita than average.
 
 **Difficulties & Approaches**:
 
@@ -224,17 +227,18 @@ we compared GDP instead of GDP per capita?
 df_q5 %>%
   mutate(gdp = gdpPercap * pop) %>% 
   ggplot(aes(x = year, y = gdp)) +
+  geom_line(aes(color = fct_reorder2(country, year, gdp))) +
   geom_line(aes(color = country))
 ```
 
-- Wow, Australia has the highest GDP by far of all of these countries. If we
+- Wow, the USA has the highest GDP by far of all of these countries. If we
 use a logarithmic y axis can we draw more conclusions about the other countries?
 
 ```{r q5-task3}
 df_q5 %>%
   mutate(gdp = gdpPercap * pop) %>%
   ggplot(aes(x = year, y = gdp)) +
-  geom_line(aes(color = country)) +
+  geom_line(aes(color = fct_reorder2(country, year, gdp))) +
   scale_y_continuous(trans = 'log10')
 ```
 

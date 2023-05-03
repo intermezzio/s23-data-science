@@ -3,47 +3,32 @@ Gapminder
 Andrew Mascillaro
 2023-01-22
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-- <a href="#guided-eda" id="toc-guided-eda">Guided EDA</a>
-  - <a
-    href="#q0-perform-your-first-checks-on-the-dataset-what-variables-are-in-this"
-    id="toc-q0-perform-your-first-checks-on-the-dataset-what-variables-are-in-this"><strong>q0</strong>
-    Perform your “first checks” on the dataset. What variables are in
-    this</a>
-  - <a
-    href="#q1-determine-the-most-and-least-recent-years-in-the-gapminder-dataset"
-    id="toc-q1-determine-the-most-and-least-recent-years-in-the-gapminder-dataset"><strong>q1</strong>
-    Determine the most and least recent years in the <code>gapminder</code>
-    dataset.</a>
-  - <a
-    href="#q2-filter-on-years-matching-year_min-and-make-a-plot-of-the-gdp-per-capita-against-continent-choose-an-appropriate-geom_-to-visualize-the-data-what-observations-can-you-make"
-    id="toc-q2-filter-on-years-matching-year_min-and-make-a-plot-of-the-gdp-per-capita-against-continent-choose-an-appropriate-geom_-to-visualize-the-data-what-observations-can-you-make"><strong>q2</strong>
-    Filter on years matching <code>year_min</code>, and make a plot of the
-    GDP per capita against continent. Choose an appropriate
-    <code>geom_</code> to visualize the data. What observations can you
-    make?</a>
-  - <a
-    href="#q3-you-should-have-found-at-least-three-outliers-in-q2-but-possibly-many-more-identify-those-outliers-figure-out-which-countries-they-are"
-    id="toc-q3-you-should-have-found-at-least-three-outliers-in-q2-but-possibly-many-more-identify-those-outliers-figure-out-which-countries-they-are"><strong>q3</strong>
-    You should have found <em>at least</em> three outliers in q2 (but
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Due Date](#due-date)
+- [Guided EDA](#guided-eda)
+  - [**q0** Perform your “first checks” on the dataset. What variables
+    are in
+    this](#q0-perform-your-first-checks-on-the-dataset-what-variables-are-in-this)
+  - [**q1** Determine the most and least recent years in the `gapminder`
+    dataset.](#q1-determine-the-most-and-least-recent-years-in-the-gapminder-dataset)
+  - [**q2** Filter on years matching `year_min`, and make a plot of the
+    GDP per capita against continent. Choose an appropriate `geom_` to
+    visualize the data. What observations can you
+    make?](#q2-filter-on-years-matching-year_min-and-make-a-plot-of-the-gdp-per-capita-against-continent-choose-an-appropriate-geom_-to-visualize-the-data-what-observations-can-you-make)
+  - [**q3** You should have found *at least* three outliers in q2 (but
     possibly many more!). Identify those outliers (figure out which
-    countries they are).</a>
-  - <a
-    href="#q4-create-a-plot-similar-to-yours-from-q2-studying-both-year_min-and-year_max-find-a-way-to-highlight-the-outliers-from-q3-on-your-plot-in-a-way-that-lets-you-identify-which-country-is-which-compare-the-patterns-between-year_min-and-year_max"
-    id="toc-q4-create-a-plot-similar-to-yours-from-q2-studying-both-year_min-and-year_max-find-a-way-to-highlight-the-outliers-from-q3-on-your-plot-in-a-way-that-lets-you-identify-which-country-is-which-compare-the-patterns-between-year_min-and-year_max"><strong>q4</strong>
-    Create a plot similar to yours from q2 studying both
-    <code>year_min</code> and <code>year_max</code>. Find a way to highlight
-    the outliers from q3 on your plot <em>in a way that lets you identify
-    which country is which</em>. Compare the patterns between
-    <code>year_min</code> and <code>year_max</code>.</a>
-- <a href="#your-own-eda" id="toc-your-own-eda">Your Own EDA</a>
-  - <a
-    href="#q5-create-at-least-three-new-figures-below-with-each-figure-try-to-pose-new-questions-about-the-data"
-    id="toc-q5-create-at-least-three-new-figures-below-with-each-figure-try-to-pose-new-questions-about-the-data"><strong>q5</strong>
-    Create <em>at least</em> three new figures below. With each figure, try
-    to pose new questions about the data.</a>
+    countries they
+    are).](#q3-you-should-have-found-at-least-three-outliers-in-q2-but-possibly-many-more-identify-those-outliers-figure-out-which-countries-they-are)
+  - [**q4** Create a plot similar to yours from q2 studying both
+    `year_min` and `year_max`. Find a way to highlight the outliers from
+    q3 on your plot *in a way that lets you identify which country is
+    which*. Compare the patterns between `year_min` and
+    `year_max`.](#q4-create-a-plot-similar-to-yours-from-q2-studying-both-year_min-and-year_max-find-a-way-to-highlight-the-outliers-from-q3-on-your-plot-in-a-way-that-lets-you-identify-which-country-is-which-compare-the-patterns-between-year_min-and-year_max)
+- [Your Own EDA](#your-own-eda)
+  - [**q5** Create *at least* three new figures below. With each figure,
+    try to pose new questions about the
+    data.](#q5-create-at-least-three-new-figures-below-with-each-figure-try-to-pose-new-questions-about-the-data)
 
 *Purpose*: Learning to do EDA well takes practice! In this challenge
 you’ll further practice EDA by first completing a guided exploration,
@@ -199,6 +184,7 @@ can.
 gapminder %>% 
   filter(year == year_min) %>% 
   ggplot(aes(x = continent, y = gdpPercap)) +
+  scale_y_continuous(trans="log10") +
   geom_violin()
 ```
 
@@ -208,6 +194,7 @@ gapminder %>%
 gapminder %>% 
   filter(year == year_min) %>% 
   ggplot(aes(x = continent, y = gdpPercap)) +
+  scale_y_continuous(trans="log10") +
   geom_boxplot()
 ```
 
@@ -215,7 +202,8 @@ gapminder %>%
 
 **Observations**:
 
-- GDP per capita within a continent is very right skewed.
+- There are outliers with higher GDP per capita than the average but no
+  outliers with a lower GDP per capita than average.
 
 **Difficulties & Approaches**:
 
@@ -375,20 +363,21 @@ df_q5 %>%
 df_q5 %>%
   mutate(gdp = gdpPercap * pop) %>% 
   ggplot(aes(x = year, y = gdp)) +
+  geom_line(aes(color = fct_reorder2(country, year, gdp))) +
   geom_line(aes(color = country))
 ```
 
 ![](c04-gapminder-assignment_files/figure-gfm/q5-task2-1.png)<!-- -->
 
-- Wow, Australia has the highest GDP by far of all of these countries.
-  If we use a logarithmic y axis can we draw more conclusions about the
+- Wow, the USA has the highest GDP by far of all of these countries. If
+  we use a logarithmic y axis can we draw more conclusions about the
   other countries?
 
 ``` r
 df_q5 %>%
   mutate(gdp = gdpPercap * pop) %>%
   ggplot(aes(x = year, y = gdp)) +
-  geom_line(aes(color = country)) +
+  geom_line(aes(color = fct_reorder2(country, year, gdp))) +
   scale_y_continuous(trans = 'log10')
 ```
 
