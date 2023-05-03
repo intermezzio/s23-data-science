@@ -144,11 +144,20 @@ problems uncertainty includes some amount of human judgment.[2]
   (LIGHTSPEED_VACUUM <= LIGHTSPEED_MICHELSON + LIGHTSPEED_PM)
 ```
 
+```{r}
+LIGHTSPEED_MICHELSON
+LIGHTSPEED_MICHELSON - LIGHTSPEED_PM
+LIGHTSPEED_MICHELSON + LIGHTSPEED_PM
+LIGHTSPEED_VACUUM
+abs(LIGHTSPEED_VACUUM - LIGHTSPEED_MICHELSON) / LIGHTSPEED_PM
+```
+
+
 **Observations**:
 - Is Michelson's estimate of the error (his uncertainty) greater or less than the true error?
-  - No.
+  - Michelson's estimate of error is less than the true error.
 - Make a quantitative comparison between Michelson's uncertainty and his error.
-  - Michelson's uncertainty is less than the true error.
+  - Michelson's uncertainty is about three times less than the true error.
 
 The following plot shows all of Michelson's data as a [control chart](https://en.wikipedia.org/wiki/Control_chart); this sort of plot is common in manufacturing, where it is used to help determine if a manufacturing process is under [statistical control](https://en.wikipedia.org/wiki/Statistical_process_control). Each dot is one of Michelson's measurements, and the grey line connects the mean taken for each day. The same plot also shows simulated data using a probability model. We'll get into statistics later in the course; for now, let's focus on understanding what real and simulated data tend to look like.
 
@@ -221,7 +230,7 @@ Differences
 
 ```{r}
 df_q2 %>% 
-  ggplot(aes(x = Temp, y = VelocityVacuum)) +
+  ggplot(aes(x = Date, y = Temp)) +
   geom_point()
 ```
 
@@ -245,8 +254,9 @@ df_q2 %>%
 **Observations**:
 
 - The VelocityVacuum estimates appear normally distributed.
-- There is a weak positive correlation between temperature and VelocityVacuum
-estimate.
+- Tests on different days had different temperatures.
+- Tests in the middle of June had the lowest temperatures over all tests in
+  June.
 - The cov of VelocityVacuum seems similar across all image qualities.
 
 

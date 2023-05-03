@@ -3,44 +3,30 @@ Michelson Speed-of-light Measurements
 Andrew Mascillaro
 2023-01-21
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-    - <a
-      href="#q1-re-create-the-following-table-from-michelson-1880-pg-139-using-df_michelson-and-dplyr-note-that-your-values-will-not-match-those-of-michelson-exactly-why-might-this-be"
-      id="toc-q1-re-create-the-following-table-from-michelson-1880-pg-139-using-df_michelson-and-dplyr-note-that-your-values-will-not-match-those-of-michelson-exactly-why-might-this-be"><strong>q1</strong>
-      Re-create the following table (from Michelson (1880), pg. 139) using
-      <code>df_michelson</code> and <code>dplyr</code>. Note that your values
-      <em>will not</em> match those of Michelson <em>exactly</em>; why might
-      this be?</a>
-    - <a
-      href="#q2-create-a-new-variable-velocityvacuum-with-the-92-kms-adjustment-to-velocity-assign-this-new-dataframe-to-df_q2"
-      id="toc-q2-create-a-new-variable-velocityvacuum-with-the-92-kms-adjustment-to-velocity-assign-this-new-dataframe-to-df_q2"><strong>q2</strong>
-      Create a new variable <code>VelocityVacuum</code> with the <span
-      class="math inline"> + 92</span> km/s adjustment to
-      <code>Velocity</code>. Assign this new dataframe to
-      <code>df_q2</code>.</a>
-    - <a
-      href="#q3-compare-michelsons-speed-of-light-estimate-against-the-modern-speed-of-light-value-is-michelsons-estimate-of-the-error-his-uncertainty-greater-or-less-than-the-true-error"
-      id="toc-q3-compare-michelsons-speed-of-light-estimate-against-the-modern-speed-of-light-value-is-michelsons-estimate-of-the-error-his-uncertainty-greater-or-less-than-the-true-error"><strong>q3</strong>
-      Compare Michelson’s speed of light estimate against the modern speed of
-      light value. Is Michelson’s estimate of the error (his uncertainty)
-      greater or less than the true error?</a>
-    - <a
-      href="#q4-inspect-the-following-plot-with-the-real-michelson-data-and-simulated-data-from-a-probability-model-document-the-similarities-and-differences-between-the-data-under-observe-below"
-      id="toc-q4-inspect-the-following-plot-with-the-real-michelson-data-and-simulated-data-from-a-probability-model-document-the-similarities-and-differences-between-the-data-under-observe-below"><strong>q4</strong>
-      Inspect the following plot with the <code>Real</code> Michelson data and
-      <code>Simulated</code> data from a probability model. Document the
-      similarities and differences between the data under <em>observe</em>
-      below.</a>
-    - <a
-      href="#q5-you-have-access-to-a-few-other-variables-construct-a-few-visualizations-of-velocityvacuum-against-these-other-factors-are-there-other-patterns-in-the-data-that-might-help-explain-the-difference-between-michelsons-estimate-and-lightspeed_vacuum"
-      id="toc-q5-you-have-access-to-a-few-other-variables-construct-a-few-visualizations-of-velocityvacuum-against-these-other-factors-are-there-other-patterns-in-the-data-that-might-help-explain-the-difference-between-michelsons-estimate-and-lightspeed_vacuum"><strong>q5</strong>
-      You have access to a few other variables. Construct a few visualizations
-      of <code>VelocityVacuum</code> against these other factors. Are there
-      other patterns in the data that might help explain the difference
-      between Michelson’s estimate and <code>LIGHTSPEED_VACUUM</code>?</a>
-  - <a href="#bibliography" id="toc-bibliography">Bibliography</a>
+- [Grading Rubric](#grading-rubric)
+  - [Individual](#individual)
+  - [Due Date](#due-date)
+    - [**q1** Re-create the following table (from Michelson (1880),
+      pg. 139) using `df_michelson` and `dplyr`. Note that your values
+      *will not* match those of Michelson *exactly*; why might this
+      be?](#q1-re-create-the-following-table-from-michelson-1880-pg-139-using-df_michelson-and-dplyr-note-that-your-values-will-not-match-those-of-michelson-exactly-why-might-this-be)
+    - [**q2** Create a new variable `VelocityVacuum` with the $+92$ km/s
+      adjustment to `Velocity`. Assign this new dataframe to
+      `df_q2`.](#q2-create-a-new-variable-velocityvacuum-with-the-92-kms-adjustment-to-velocity-assign-this-new-dataframe-to-df_q2)
+    - [**q3** Compare Michelson’s speed of light estimate against the
+      modern speed of light value. Is Michelson’s estimate of the error
+      (his uncertainty) greater or less than the true
+      error?](#q3-compare-michelsons-speed-of-light-estimate-against-the-modern-speed-of-light-value-is-michelsons-estimate-of-the-error-his-uncertainty-greater-or-less-than-the-true-error)
+    - [**q4** Inspect the following plot with the `Real` Michelson data
+      and `Simulated` data from a probability model. Document the
+      similarities and differences between the data under *observe*
+      below.](#q4-inspect-the-following-plot-with-the-real-michelson-data-and-simulated-data-from-a-probability-model-document-the-similarities-and-differences-between-the-data-under-observe-below)
+    - [**q5** You have access to a few other variables. Construct a few
+      visualizations of `VelocityVacuum` against these other factors.
+      Are there other patterns in the data that might help explain the
+      difference between Michelson’s estimate and
+      `LIGHTSPEED_VACUUM`?](#q5-you-have-access-to-a-few-other-variables-construct-a-few-visualizations-of-velocityvacuum-against-these-other-factors-are-there-other-patterns-in-the-data-that-might-help-explain-the-difference-between-michelsons-estimate-and-lightspeed_vacuum)
+  - [Bibliography](#bibliography)
 
 *Purpose*: When studying physical problems, there is an important
 distinction between *error* and *uncertainty*. The primary purpose of
@@ -239,10 +225,41 @@ human judgment.\[2\]
 
     ## [1] FALSE
 
+``` r
+LIGHTSPEED_MICHELSON
+```
+
+    ## [1] 299944
+
+``` r
+LIGHTSPEED_MICHELSON - LIGHTSPEED_PM
+```
+
+    ## [1] 299893
+
+``` r
+LIGHTSPEED_MICHELSON + LIGHTSPEED_PM
+```
+
+    ## [1] 299995
+
+``` r
+LIGHTSPEED_VACUUM
+```
+
+    ## [1] 299792.5
+
+``` r
+abs(LIGHTSPEED_VACUUM - LIGHTSPEED_MICHELSON) / LIGHTSPEED_PM
+```
+
+    ## [1] 2.971412
+
 **Observations**: - Is Michelson’s estimate of the error (his
-uncertainty) greater or less than the true error? - No. - Make a
-quantitative comparison between Michelson’s uncertainty and his error. -
-Michelson’s uncertainty is less than the true error.
+uncertainty) greater or less than the true error? - Michelson’s estimate
+of error is less than the true error. - Make a quantitative comparison
+between Michelson’s uncertainty and his error. - Michelson’s uncertainty
+is about three times less than the true error.
 
 The following plot shows all of Michelson’s data as a [control
 chart](https://en.wikipedia.org/wiki/Control_chart); this sort of plot
@@ -327,11 +344,11 @@ variance.
 
 ``` r
 df_q2 %>% 
-  ggplot(aes(x = Temp, y = VelocityVacuum)) +
+  ggplot(aes(x = Date, y = Temp)) +
   geom_point()
 ```
 
-![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 df_q2 %>% 
@@ -341,7 +358,7 @@ df_q2 %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 df_q2 %>% 
@@ -351,13 +368,14 @@ df_q2 %>%
   geom_col()
 ```
 
-![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 **Observations**:
 
 - The VelocityVacuum estimates appear normally distributed.
-- There is a weak positive correlation between temperature and
-  VelocityVacuum estimate.
+- Tests on different days had different temperatures.
+- Tests in the middle of June had the lowest temperatures over all tests
+  in June.
 - The cov of VelocityVacuum seems similar across all image qualities.
 
 ## Bibliography
