@@ -310,6 +310,29 @@ the NYT data `df_covid` already contains the `fips`.
 ### **q3** Process the `id` column of `df_pop` to create a `fips` column.
 
 ``` r
+df_covid %>% 
+  filter(
+    county == "Loving",
+    state == "Texas"
+  )
+```
+
+    ## # A tibble: 45 × 6
+    ##    date       county state fips  cases deaths
+    ##    <date>     <chr>  <chr> <chr> <dbl>  <dbl>
+    ##  1 2020-11-17 Loving Texas 48301     1      0
+    ##  2 2020-11-18 Loving Texas 48301     1      0
+    ##  3 2020-11-19 Loving Texas 48301     1      0
+    ##  4 2020-11-20 Loving Texas 48301     1      0
+    ##  5 2020-11-21 Loving Texas 48301     1      0
+    ##  6 2020-11-22 Loving Texas 48301     1      0
+    ##  7 2020-11-23 Loving Texas 48301     1      0
+    ##  8 2020-11-24 Loving Texas 48301     1      0
+    ##  9 2020-11-25 Loving Texas 48301     1      0
+    ## 10 2020-11-26 Loving Texas 48301     1      0
+    ## # … with 35 more rows
+
+``` r
 ## TASK: Create a `fips` column by extracting the county code
 df_q3 <- df_pop %>% 
   mutate(
@@ -361,8 +384,8 @@ print("Very good!")
 
 ``` r
 ## TASK: Join df_covid and df_q3 by fips.
-df_q4 <- df_q3 %>% 
-  left_join(df_covid, by = "fips")
+df_q4 <- df_covid %>% 
+  left_join(df_q3, by = "fips")
 ```
 
 For convenience, I down-select some columns and produce more convenient
@@ -480,16 +503,18 @@ df_summative <- df_normalized %>%
     mean_cases_per100k = mean(cases_per100k),
     sd_cases_per100k = sd(cases_per100k),
     mean_deaths_per100k = mean(deaths_per100k),
-    sd_deaths_per100k = sd(deaths_per100k)
+    sd_deaths_per100k = sd(deaths_per100k),
+    population = mean(population),
   )
 df_summative %>% slice(300)
 ```
 
-    ## # A tibble: 1 × 5
-    ##   date       mean_cases_per100k sd_cases_per100k mean_deaths_per100k sd_deaths…¹
-    ##   <date>                  <dbl>            <dbl>               <dbl>       <dbl>
-    ## 1 2020-11-15              3684.            2066.                66.8        65.3
-    ## # … with abbreviated variable name ¹​sd_deaths_per100k
+    ## # A tibble: 1 × 6
+    ##   date       mean_cases_per100k sd_cases_per100k mean_deaths_p…¹ sd_de…² popul…³
+    ##   <date>                  <dbl>            <dbl>           <dbl>   <dbl>   <dbl>
+    ## 1 2020-11-15              3684.            2066.            66.8    65.3 100432.
+    ## # … with abbreviated variable names ¹​mean_deaths_per100k, ²​sd_deaths_per100k,
+    ## #   ³​population
 
 *Note*:
 
@@ -502,59 +527,75 @@ df_summative %>% slice(300)
 ``` r
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
 sorted_cases <- df_normalized %>% 
-  group_by(fips) %>% 
+  group_by(fips, county, state) %>% 
   summarize(max_cases_per100k = max(cases_per100k)) %>% 
   arrange(desc(max_cases_per100k))
+```
+
+    ## `summarise()` has grouped output by 'fips', 'county'. You can override using
+    ## the `.groups` argument.
+
+``` r
 top_cases <- sorted_cases %>% 
   slice(1:10)
 top_cases
 ```
 
-    ## # A tibble: 10 × 2
-    ##    fips  max_cases_per100k
-    ##    <chr>             <dbl>
-    ##  1 08025            29254.
-    ##  2 47169            22553.
-    ##  3 46041            21855.
-    ##  4 20137            21491.
-    ##  5 46009            21194.
-    ##  6 05079            20591.
-    ##  7 13053            20535.
-    ##  8 46017            19971.
-    ##  9 47095            18708.
-    ## 10 19021            18337.
+    ## # A tibble: 3,231 × 4
+    ## # Groups:   fips, county [3,222]
+    ##    fips  county   state   max_cases_per100k
+    ##    <chr> <chr>    <chr>               <dbl>
+    ##  1 01001 Autauga  Alabama             7591.
+    ##  2 01003 Baldwin  Alabama             6536.
+    ##  3 01005 Barbour  Alabama             5872.
+    ##  4 01007 Bibb     Alabama             8141.
+    ##  5 01009 Blount   Alabama             8051.
+    ##  6 01011 Bullock  Alabama             8298.
+    ##  7 01013 Butler   Alabama             7531.
+    ##  8 01015 Calhoun  Alabama             8249.
+    ##  9 01017 Chambers Alabama             6921.
+    ## 10 01019 Cherokee Alabama             5469.
+    ## # … with 3,221 more rows
 
 ``` r
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
 sorted_deaths <- df_normalized %>% 
-  group_by(fips) %>% 
+  group_by(fips, county, state) %>% 
   summarize(max_deaths_per100k = max(deaths_per100k)) %>% 
   arrange(desc(max_deaths_per100k))
+```
+
+    ## `summarise()` has grouped output by 'fips', 'county'. You can override using
+    ## the `.groups` argument.
+
+``` r
 top_deaths <- sorted_deaths %>% 
   slice(1:10)
 top_deaths
 ```
 
-    ## # A tibble: 10 × 2
-    ##    fips  max_deaths_per100k
-    ##    <chr>              <dbl>
-    ##  1 20063               764.
-    ##  2 46073               739.
-    ##  3 38021               644.
-    ##  4 46053               619.
-    ##  5 46125               593.
-    ##  6 38031               578.
-    ##  7 55051               577.
-    ##  8 46057               567.
-    ##  9 51595               558.
-    ## 10 13141               551.
+    ## # A tibble: 3,231 × 4
+    ## # Groups:   fips, county [3,222]
+    ##    fips  county   state   max_deaths_per100k
+    ##    <chr> <chr>    <chr>                <dbl>
+    ##  1 01001 Autauga  Alabama               87.0
+    ##  2 01003 Baldwin  Alabama               77.4
+    ##  3 01005 Barbour  Alabama              124. 
+    ##  4 01007 Bibb     Alabama              204. 
+    ##  5 01009 Blount   Alabama              109. 
+    ##  6 01011 Bullock  Alabama              213. 
+    ##  7 01013 Butler   Alabama              225. 
+    ##  8 01015 Calhoun  Alabama              136. 
+    ##  9 01017 Chambers Alabama              186. 
+    ## 10 01019 Cherokee Alabama               92.8
+    ## # … with 3,221 more rows
 
 **Observations**:
 
-- The counties with the maximum cases per 100k have about 10x more cases
-  than the average county.
-- The counties with the maximum deaths per 100k have more than 10x more
-  deaths than the average county.
+- The counties with the highest cases per 100k have about 10x more cases
+  per 100k than the average county at its peak cases per 100k.
+- The counties with the highest deaths per 100k have more than 10x more
+  deaths than the average county at its peak deaths per 100k.
 
 ## Self-directed EDA
 
@@ -584,7 +625,9 @@ df_normalized %>%
   geom_line()
 ```
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+    ## Warning: Removed 9535 rows containing missing values (`geom_line()`).
+
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 sorted_cases %>%
@@ -606,7 +649,7 @@ sorted_cases %>%
 
     ## `geom_smooth()` using method = 'gam' and formula = 'y ~ s(x, bs = "cs")'
 
-    ## Warning: Removed 176 rows containing non-finite values (`stat_smooth()`).
+    ## Warning: Removed 3199 rows containing non-finite values (`stat_smooth()`).
 
     ## Warning: The following aesthetics were dropped during statistical transformation: colour
     ## ℹ This can happen when ggplot fails to infer the correct grouping structure in
@@ -614,9 +657,9 @@ sorted_cases %>%
     ## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
     ##   variable into a factor?
 
-    ## Warning: Removed 87 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 3110 rows containing missing values (`geom_point()`).
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 sorted_deaths %>%
@@ -631,9 +674,9 @@ sorted_deaths %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 176 rows containing non-finite values (`stat_bin()`).
+    ## Warning: Removed 229 rows containing non-finite values (`stat_bin()`).
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 sorted_cases %>%
@@ -646,9 +689,9 @@ sorted_cases %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 9 rows containing non-finite values (`stat_bin()`).
+    ## Warning: Removed 62 rows containing non-finite values (`stat_bin()`).
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 us_counties <- map_data("county")
@@ -664,9 +707,9 @@ sorted_deaths %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 176 rows containing non-finite values (`stat_bin()`).
+    ## Warning: Removed 229 rows containing non-finite values (`stat_bin()`).
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 cases_and_deaths <- sorted_cases %>%
@@ -699,23 +742,24 @@ mapped_cases_and_deaths %>%
   group_by(subregion, region, fips)
 ```
 
-    ## # A tibble: 87,949 × 13
+    ## # A tibble: 87,949 × 17
     ## # Groups:   subregion, region, fips [3,076]
-    ##    fips  max_ca…¹ max_d…² id    count…³ popul…⁴ error subre…⁵ region  long   lat
-    ##    <chr>    <dbl>   <dbl> <chr> <chr>     <dbl> <dbl> <chr>   <chr>  <dbl> <dbl>
-    ##  1 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.1
-    ##  2 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
-    ##  3 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
-    ##  4 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
-    ##  5 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.5
-    ##  6 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.3
-    ##  7 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.3
-    ##  8 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.2
-    ##  9 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.2
-    ## 10 08025   29254.    213. 0500… Crowle…    5630    NA crowley color… -104.  38.1
-    ## # … with 87,939 more rows, 2 more variables: group <dbl>, order <int>, and
-    ## #   abbreviated variable names ¹​max_cases_per100k, ²​max_deaths_per100k,
-    ## #   ³​county_name, ⁴​population, ⁵​subregion
+    ##    fips  county.x state.x  max_c…¹ count…² state.y max_d…³ id    count…⁴ popul…⁵
+    ##    <chr> <chr>    <chr>      <dbl> <chr>   <chr>     <dbl> <chr> <chr>     <dbl>
+    ##  1 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  2 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  3 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  4 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  5 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  6 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  7 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  8 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ##  9 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ## 10 08025 Crowley  Colorado  29254. Crowley Colora…    213. 0500… Crowle…    5630
+    ## # … with 87,939 more rows, 7 more variables: error <dbl>, subregion <chr>,
+    ## #   region <chr>, long <dbl>, lat <dbl>, group <dbl>, order <int>, and
+    ## #   abbreviated variable names ¹​max_cases_per100k, ²​county.y,
+    ## #   ³​max_deaths_per100k, ⁴​county_name, ⁵​population
 
 ``` r
 summative_cases_and_deaths <- mapped_cases_and_deaths %>% 
@@ -802,11 +846,29 @@ facetable_cases_pop_deaths %>%
 
     ## Warning: Transformation introduced infinite values in discrete y-axis
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 summative_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = county_pop,
+  ggplot(aes(x = long, y = lat, group = group, fill = county_max_cases_per100k,
+             label)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log", name = "Max Cases") +
+  theme_maps
+```
+
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+Observations
+
+- Counties in Maine have a low maximum cases per 100k
+- North and South Dakota have higher maximum cases per 100k
+- There are a lot of counties that have different maximum cases per 100k
+  than their neighboring counties
+
+``` r
+summative_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = county_max_deaths_per100k,
              label)) +
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
@@ -814,7 +876,48 @@ summative_cases_and_deaths %>%
   theme_maps
 ```
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+    ## Warning: Transformation introduced infinite values in discrete y-axis
+
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+Observations
+
+- Counties in Massachusetts generally have higher max deaths per 100k
+  than New Hampshire, Vermont, and Maine
+
+``` r
+summative_cases_and_deaths %>% 
+  filter(
+    subregion == "loving",
+    region == "texas"
+  ) %>% 
+  arrange(
+    county_max_cases_per100k
+  )
+```
+
+    ## # A tibble: 18 × 10
+    ##    subregion region fips  county_pop county_ma…¹ count…²  long   lat group order
+    ##    <chr>     <chr>  <chr>      <dbl>       <dbl>   <dbl> <dbl> <dbl> <dbl> <int>
+    ##  1 loving    texas  48301        102        980.       0 -104.  32.0  2643 77278
+    ##  2 loving    texas  48301        102        980.       0 -104.  32.0  2643 77279
+    ##  3 loving    texas  48301        102        980.       0 -103.  32.0  2643 77280
+    ##  4 loving    texas  48301        102        980.       0 -103.  31.7  2643 77281
+    ##  5 loving    texas  48301        102        980.       0 -104.  31.7  2643 77282
+    ##  6 loving    texas  48301        102        980.       0 -104.  31.7  2643 77283
+    ##  7 loving    texas  48301        102        980.       0 -104.  31.7  2643 77284
+    ##  8 loving    texas  48301        102        980.       0 -104.  31.7  2643 77285
+    ##  9 loving    texas  48301        102        980.       0 -104.  31.7  2643 77286
+    ## 10 loving    texas  48301        102        980.       0 -104.  31.7  2643 77287
+    ## 11 loving    texas  48301        102        980.       0 -104.  31.7  2643 77288
+    ## 12 loving    texas  48301        102        980.       0 -104.  31.8  2643 77289
+    ## 13 loving    texas  48301        102        980.       0 -104.  31.8  2643 77290
+    ## 14 loving    texas  48301        102        980.       0 -104.  31.9  2643 77291
+    ## 15 loving    texas  48301        102        980.       0 -104.  31.9  2643 77292
+    ## 16 loving    texas  48301        102        980.       0 -104.  31.9  2643 77293
+    ## 17 loving    texas  48301        102        980.       0 -104.  32.0  2643 77294
+    ## 18 loving    texas  48301        102        980.       0 -104.  32.0  2643 77295
+    ## # … with abbreviated variable names ¹​county_max_cases_per100k,
+    ## #   ²​county_max_deaths_per100k
 
 ``` r
 summative_cases_and_deaths %>% 
@@ -859,7 +962,7 @@ summative_cases_and_deaths %>%
     ## Scale for y is already present.
     ## Adding another scale for y, which will replace the existing scale.
 
-    ## Warning: Removed 1703 rows containing non-finite values (`stat_density()`).
+    ## Warning: Removed 1807 rows containing non-finite values (`stat_density()`).
 
     ## Warning: Removed 1807 rows containing missing values (`geom_point()`).
 
@@ -877,7 +980,12 @@ summative_cases_and_deaths %>%
 
     ## Warning: Removed 3552 rows containing non-finite values (`stat_density()`).
 
-![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](c06-covid19-assignment_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+Observations
+
+- There doesn’t seem to be a correlation with population and cases or
+  population and deaths, only a weak positive correlation between cases
+  and deaths.
 
 Part of this data sifting was figuring out how to parse county data from
 Louisiana, which often would show up as blank because it has parishes
@@ -893,19 +1001,20 @@ cases_and_deaths %>%
   distinct(subregion)
 ```
 
-    ## # A tibble: 64 × 1
-    ##    subregion     
-    ##    <chr>         
-    ##  1 east carroll  
-    ##  2 east feliciana
-    ##  3 madison       
-    ##  4 franklin      
-    ##  5 allen         
-    ##  6 caldwell      
-    ##  7 ouachita      
-    ##  8 bienville     
-    ##  9 jackson       
-    ## 10 pointe coupee 
+    ## # A tibble: 64 × 2
+    ## # Groups:   fips [64]
+    ##    fips  subregion     
+    ##    <chr> <chr>         
+    ##  1 22035 east carroll  
+    ##  2 22037 east feliciana
+    ##  3 22065 madison       
+    ##  4 22041 franklin      
+    ##  5 22003 allen         
+    ##  6 22021 caldwell      
+    ##  7 22073 ouachita      
+    ##  8 22013 bienville     
+    ##  9 22049 jackson       
+    ## 10 22077 pointe coupee 
     ## # … with 54 more rows
 
 ``` r
@@ -1010,6 +1119,8 @@ df_normalized %>%
 
     ## Warning: `label_number_si()` was deprecated in scales 1.2.0.
     ## ℹ Please use the `scale_cut` argument of `label_number()` instead.
+
+    ## Warning: Removed 291 rows containing missing values (`geom_line()`).
 
 ![](c06-covid19-assignment_files/figure-gfm/ma-example-1.png)<!-- -->
 

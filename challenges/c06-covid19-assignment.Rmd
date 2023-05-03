@@ -187,8 +187,8 @@ print("Very good!")
 
 ```{r q4-task}
 ## TASK: Join df_covid and df_q3 by fips.
-df_q4 <- df_q3 %>% 
-  left_join(df_covid, by = "fips")
+df_q4 <- df_covid %>% 
+  left_join(df_q3, by = "fips")
 ```
 
 For convenience, I down-select some columns and produce more convenient column
@@ -285,7 +285,8 @@ df_summative <- df_normalized %>%
     mean_cases_per100k = mean(cases_per100k),
     sd_cases_per100k = sd(cases_per100k),
     mean_deaths_per100k = mean(deaths_per100k),
-    sd_deaths_per100k = sd(deaths_per100k)
+    sd_deaths_per100k = sd(deaths_per100k),
+    population = mean(population),
   )
 df_summative %>% slice(300)
 ```
@@ -301,7 +302,7 @@ individually.
 ```{r q7-task}
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
 sorted_cases <- df_normalized %>% 
-  group_by(fips) %>% 
+  group_by(fips, county, state) %>% 
   summarize(max_cases_per100k = max(cases_per100k)) %>% 
   arrange(desc(max_cases_per100k))
 top_cases <- sorted_cases %>% 
@@ -310,7 +311,7 @@ top_cases
 
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
 sorted_deaths <- df_normalized %>% 
-  group_by(fips) %>% 
+  group_by(fips, county, state) %>% 
   summarize(max_deaths_per100k = max(deaths_per100k)) %>% 
   arrange(desc(max_deaths_per100k))
 top_deaths <- sorted_deaths %>% 
@@ -320,10 +321,10 @@ top_deaths
 
 **Observations**:
 
-- The counties with the maximum cases per 100k have about 10x more cases than
-the average county.
-- The counties with the maximum deaths per 100k have more than 10x more deaths
-than the average county.
+- The counties with the highest cases per 100k have about 10x more cases per
+100k than the average county at its peak cases per 100k.
+- The counties with the highest deaths per 100k have more than 10x more deaths
+than the average county at its peak deaths per 100k.
 
 ## Self-directed EDA
 <!-- ------------------------- -->
@@ -483,13 +484,33 @@ facetable_cases_pop_deaths %>%
 ```
 ```{r}
 summative_cases_and_deaths %>% 
-  ggplot(aes(x = long, y = lat, group = group, fill = county_pop,
+  ggplot(aes(x = long, y = lat, group = group, fill = county_max_cases_per100k,
+             label)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis", trans = "log", name = "Max Cases") +
+  theme_maps
+```
+Observations
+
+- Counties in Maine have a low maximum cases per 100k
+- North and South Dakota have higher maximum cases per 100k
+- There are a lot of counties that have different maximum cases per 100k than
+  their neighboring counties
+
+```{r}
+summative_cases_and_deaths %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = county_max_deaths_per100k,
              label)) +
   geom_polygon(color = "gray90", size = 0.1) +
   coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
   scale_fill_continuous(type = "viridis", trans = "log", name = "Population") +
   theme_maps
 ```
+Observations
+
+- Counties in Massachusetts generally have higher max deaths per 100k than New
+  Hampshire, Vermont, and Maine
 
 ```{r}
 summative_cases_and_deaths %>% 
@@ -514,7 +535,10 @@ summative_cases_and_deaths %>%
   
   theme_gray()
 ```
+Observations
 
+- There doesn't seem to be a correlation with population and cases or population
+  and deaths, only a weak positive correlation between cases and deaths.
 
 Part of this data sifting was figuring out how to parse county data from
 Louisiana, which often would show up as blank because it has parishes instead.
