@@ -115,17 +115,18 @@ df_q1 <- tibble(
 ## TASK: Estimate pi using your data from q1
 df_q2 <- df_q1 %>%
   mutate(
-    in_circ = (x ^ 2 + y ^ 2) < 1
+    in_circ = (x ^ 2 + y ^ 2) < 1,
+    stat = in_circ * 4
   ) %>%
   summarize(
-    in_circ_mean = mean(in_circ),
-    in_circ_sd = sd(in_circ),
+    in_circ_mean_adj = mean(stat),
+    in_circ_sd_adj = sd(stat),
     n = nrow(df_q1),
-    in_circ_se = in_circ_sd / sqrt(n),
-    pi_est = in_circ_mean * 4
+    in_circ_se = in_circ_sd_adj / sqrt(n),
+    pi_est = in_circ_mean_adj
   )
 df_q2
-pi_est <- df_q2$in_circ_mean * 4
+pi_est <- df_q2$pi_est
 ```
 
 # Quantifying Uncertainty
@@ -137,10 +138,11 @@ You now have an estimate of $\pi$, but how trustworthy is that estimate? In `e-s
 
 ```{r q3-task}
 q99 <- qnorm( 1 - (1 - 0.99) / 2 )
-lo_pi <- (df_q2$in_circ_mean - q99 * df_q2$in_circ_se) * 4
-hi_pi <- (df_q2$in_circ_mean + q99 * df_q2$in_circ_se) * 4
-lo_pi
-hi_pi
+df_q2 %>%
+  summarize(
+    lo_pi = in_circ_mean_adj - q99 * in_circ_se,
+    hi_pi = in_circ_mean_adj + q99 * in_circ_se
+  )
 ```
 
 **Observations**:
@@ -155,7 +157,7 @@ hi_pi
   - nobody actually depends on my estimation of the number, and the
   only goals for the estimate are to be within the confidence
   interval and for the confidence interval to be small enough for me
-  to qualitatively think, \`\`wowow, this estimate of $\pi$ looks
+  to qualitatively think, "wowow, this estimate of $\pi$ looks
   cool"
   - In this case, the confidence interval is less than 0.1, and the
   true value of $\pi$ was within this interval

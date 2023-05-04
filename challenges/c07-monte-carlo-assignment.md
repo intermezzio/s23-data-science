@@ -1,7 +1,7 @@
 Estimating Pi With a Shotgun
 ================
-(Your name here)
-2020-
+Andrew Mascillaro
+2023-03-14
 
 - [Grading Rubric](#grading-rubric)
   - [Individual](#individual)
@@ -194,25 +194,26 @@ df_q1 <- tibble(
 ## TASK: Estimate pi using your data from q1
 df_q2 <- df_q1 %>%
   mutate(
-    in_circ = (x ^ 2 + y ^ 2) < 1
+    in_circ = (x ^ 2 + y ^ 2) < 1,
+    stat = in_circ * 4
   ) %>%
   summarize(
-    in_circ_mean = mean(in_circ),
-    in_circ_sd = sd(in_circ),
+    in_circ_mean_adj = mean(stat),
+    in_circ_sd_adj = sd(stat),
     n = nrow(df_q1),
-    in_circ_se = in_circ_sd / sqrt(n),
-    pi_est = in_circ_mean * 4
+    in_circ_se = in_circ_sd_adj / sqrt(n),
+    pi_est = in_circ_mean_adj
   )
 df_q2
 ```
 
     ## # A tibble: 1 × 5
-    ##   in_circ_mean in_circ_sd     n in_circ_se pi_est
-    ##          <dbl>      <dbl> <int>      <dbl>  <dbl>
-    ## 1        0.782      0.413 10000    0.00413   3.13
+    ##   in_circ_mean_adj in_circ_sd_adj     n in_circ_se pi_est
+    ##              <dbl>          <dbl> <int>      <dbl>  <dbl>
+    ## 1             3.13           1.65 10000     0.0165   3.13
 
 ``` r
-pi_est <- df_q2$in_circ_mean * 4
+pi_est <- df_q2$pi_est
 ```
 
 # Quantifying Uncertainty
@@ -228,18 +229,17 @@ to assess your $\pi$ estimate.
 
 ``` r
 q99 <- qnorm( 1 - (1 - 0.99) / 2 )
-lo_pi <- (df_q2$in_circ_mean - q99 * df_q2$in_circ_se) * 4
-hi_pi <- (df_q2$in_circ_mean + q99 * df_q2$in_circ_se) * 4
-lo_pi
+df_q2 %>%
+  summarize(
+    lo_pi = in_circ_mean_adj - q99 * in_circ_se,
+    hi_pi = in_circ_mean_adj + q99 * in_circ_se
+  )
 ```
 
-    ## [1] 3.084643
-
-``` r
-hi_pi
-```
-
-    ## [1] 3.169757
+    ## # A tibble: 1 × 2
+    ##   lo_pi hi_pi
+    ##   <dbl> <dbl>
+    ## 1  3.08  3.17
 
 **Observations**:
 
@@ -253,7 +253,7 @@ hi_pi
   - nobody actually depends on my estimation of the number, and the only
     goals for the estimate are to be within the confidence interval and
     for the confidence interval to be small enough for me to
-    qualitatively think, \`\`wowow, this estimate of $\pi$ looks cool”
+    qualitatively think, “wowow, this estimate of $\pi$ looks cool”
   - In this case, the confidence interval is less than 0.1, and the true
     value of $\pi$ was within this interval
 
