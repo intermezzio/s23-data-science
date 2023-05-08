@@ -282,8 +282,8 @@ df_data %>%
 - Document your observations here.
   - Areas like suffolk county and hampden county, where the median household
   income are low, tend to have a smaller range of household incomes.
-  - Nantucket has a large range of household incomes compared to the rest of
-  the counties.
+  - Nantucket has a larger confidence interval for median household income
+    than the rest of the counties.
   - Two person families tend to have lower household incomes.
 - Can you confidently distinguish between household incomes in Suffolk county? Why or why not?
   - No, as these household incomes are too similar to each other and have
@@ -311,8 +311,9 @@ df_data %>%
 
 - What *overall* trend do you see between `SE` and population? Why might this trend exist?
   - There is a negative correlation between SE and population, which should
-  exist because with a higher population, more data can be collected to create
-  a more accurate sample for a given county.
+  exist because with a higher population, if a roughly fixed percentage of this
+  demographic offers income data, this larger sample size can be used to create
+  a more accurate measurement for a given county.
 - What does this *overall* trend tell you about the relative ease of studying small vs large counties?
   - Studying large communities is probably a lot easier than studying small
   communities, at least if the end goal is to create quantitative, standardized

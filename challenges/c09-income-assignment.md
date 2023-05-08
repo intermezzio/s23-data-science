@@ -88,14 +88,16 @@ for more information.
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-    ## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-    ## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+    ## ✔ purrr     1.0.1     
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ### **q1** Load the population data from c06; simply replace `filename_pop` below.
 
@@ -132,20 +134,20 @@ df_pop
 ```
 
     ## # A tibble: 3,221 × 7
-    ##    id             geographic_area_name     populatio…¹ popul…² X5    X6    X7   
-    ##    <chr>          <chr>                          <dbl> <chr>   <chr> <chr> <lgl>
-    ##  1 0100000US      United States              322903030 null    ***** ***** NA   
-    ##  2 0500000US01001 Autauga County, Alabama        55200 null    ***** ***** NA   
-    ##  3 0500000US01003 Baldwin County, Alabama       208107 null    ***** ***** NA   
-    ##  4 0500000US01005 Barbour County, Alabama        25782 null    ***** ***** NA   
-    ##  5 0500000US01007 Bibb County, Alabama           22527 null    ***** ***** NA   
-    ##  6 0500000US01009 Blount County, Alabama         57645 null    ***** ***** NA   
-    ##  7 0500000US01011 Bullock County, Alabama        10352 null    ***** ***** NA   
-    ##  8 0500000US01013 Butler County, Alabama         20025 null    ***** ***** NA   
-    ##  9 0500000US01015 Calhoun County, Alabama       115098 null    ***** ***** NA   
-    ## 10 0500000US01017 Chambers County, Alabama       33826 null    ***** ***** NA   
-    ## # … with 3,211 more rows, and abbreviated variable names ¹​population_estimate,
-    ## #   ²​population_moe
+    ##    id        geographic_area_name population_estimate population_moe X5    X6   
+    ##    <chr>     <chr>                              <dbl> <chr>          <chr> <chr>
+    ##  1 0100000US United States                  322903030 null           ***** *****
+    ##  2 0500000U… Autauga County, Ala…               55200 null           ***** *****
+    ##  3 0500000U… Baldwin County, Ala…              208107 null           ***** *****
+    ##  4 0500000U… Barbour County, Ala…               25782 null           ***** *****
+    ##  5 0500000U… Bibb County, Alabama               22527 null           ***** *****
+    ##  6 0500000U… Blount County, Alab…               57645 null           ***** *****
+    ##  7 0500000U… Bullock County, Ala…               10352 null           ***** *****
+    ##  8 0500000U… Butler County, Alab…               20025 null           ***** *****
+    ##  9 0500000U… Calhoun County, Ala…              115098 null           ***** *****
+    ## 10 0500000U… Chambers County, Al…               33826 null           ***** *****
+    ## # ℹ 3,211 more rows
+    ## # ℹ 1 more variable: X7 <lgl>
 
 You might wonder why the `Margin of Error` in the population estimates
 is listed as `*****`. From the [documentation (PDF
@@ -203,25 +205,25 @@ df_income
 ```
 
     ## # A tibble: 3,220 × 483
-    ##    id    Geogr…¹ Estim…² Margi…³ Annot…⁴ Annot…⁵ Estim…⁶ Margi…⁷ Annot…⁸ Annot…⁹
-    ##    <chr> <chr>     <dbl>   <dbl> <chr>   <chr>     <dbl>   <dbl> <chr>   <chr>  
-    ##  1 0500… Autaug…   21115     383 null    null      16585     363 null    null   
-    ##  2 0500… Baldwi…   78622    1183 null    null      69544    1042 null    null   
-    ##  3 0500… Barbou…    9186     280 null    null       4729     211 null    null   
-    ##  4 0500… Bibb C…    6840     321 null    null       5588     346 null    null   
-    ##  5 0500… Blount…   20600     396 null    null      20054     417 null    null   
-    ##  6 0500… Bulloc…    3609     196 null    null        881     119 null    null   
-    ##  7 0500… Butler…    6708     274 null    null       3821     173 null    null   
-    ##  8 0500… Calhou…   45033     683 null    null      33820     559 null    null   
-    ##  9 0500… Chambe…   13516     372 null    null       7953     296 null    null   
-    ## 10 0500… Cherok…   10606     370 null    null       9953     356 null    null   
-    ## # … with 3,210 more rows, 473 more variables:
-    ## #   `Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!Black or African American` <dbl>,
-    ## #   `Annotation of Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!Black or African American` <chr>,
-    ## #   `Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!Black or African American` <dbl>,
-    ## #   `Annotation of Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!Black or African American` <chr>,
-    ## #   `Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!American Indian and Alaska Native` <dbl>,
-    ## #   `Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households!!One race--!!American Indian and Alaska Native` <dbl>, …
+    ##    id       `Geographic Area Name` Estimate!!Number!!HO…¹ Margin of Error!!Num…²
+    ##    <chr>    <chr>                                   <dbl>                  <dbl>
+    ##  1 0500000… Autauga County, Alaba…                  21115                    383
+    ##  2 0500000… Baldwin County, Alaba…                  78622                   1183
+    ##  3 0500000… Barbour County, Alaba…                   9186                    280
+    ##  4 0500000… Bibb County, Alabama                     6840                    321
+    ##  5 0500000… Blount County, Alabama                  20600                    396
+    ##  6 0500000… Bullock County, Alaba…                   3609                    196
+    ##  7 0500000… Butler County, Alabama                   6708                    274
+    ##  8 0500000… Calhoun County, Alaba…                  45033                    683
+    ##  9 0500000… Chambers County, Alab…                  13516                    372
+    ## 10 0500000… Cherokee County, Alab…                  10606                    370
+    ## # ℹ 3,210 more rows
+    ## # ℹ abbreviated names:
+    ## #   ¹​`Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households`,
+    ## #   ²​`Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households`
+    ## # ℹ 479 more variables:
+    ## #   `Annotation of Margin of Error!!Number MOE!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households` <chr>,
+    ## #   `Annotation of Estimate!!Number!!HOUSEHOLD INCOME BY RACE AND HISPANIC OR LATINO ORIGIN OF HOUSEHOLDER!!Households` <chr>, …
 
 Use the following test to check that you downloaded the correct file:
 
@@ -288,41 +290,12 @@ df_q3 <-
   glimpse()
 ```
 
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
+    ## Warning: There were 18 warnings in `mutate()`.
+    ## The first warning was:
+    ## ℹ In argument: `across(contains("median"), as.numeric)`.
+    ## Caused by warning:
+    ## ! NAs introduced by coercion
+    ## ℹ Run `dplyr::last_dplyr_warnings()` to see the 17 remaining warnings.
 
     ## Rows: 15,286
     ## Columns: 5
@@ -524,8 +497,8 @@ df_data %>%
   - Areas like suffolk county and hampden county, where the median
     household income are low, tend to have a smaller range of household
     incomes.
-  - Nantucket has a large range of household incomes compared to the
-    rest of the counties.
+  - Nantucket has a larger confidence interval for median household
+    income than the rest of the counties.
   - Two person families tend to have lower household incomes.
 - Can you confidently distinguish between household incomes in Suffolk
   county? Why or why not?
@@ -554,6 +527,9 @@ df_data %>%
 
     ## Warning: The dot-dot notation (`..density..`) was deprecated in ggplot2 3.4.0.
     ## ℹ Please use `after_stat(density)` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
 ![](c09-income-assignment_files/figure-gfm/q7-task-1.png)<!-- -->
 
@@ -562,8 +538,10 @@ df_data %>%
 - What *overall* trend do you see between `SE` and population? Why might
   this trend exist?
   - There is a negative correlation between SE and population, which
-    should exist because with a higher population, more data can be
-    collected to create a more accurate sample for a given county.
+    should exist because with a higher population, if a roughly fixed
+    percentage of this demographic offers income data, this larger
+    sample size can be used to create a more accurate measurement for a
+    given county.
 - What does this *overall* trend tell you about the relative ease of
   studying small vs large counties?
   - Studying large communities is probably a lot easier than studying

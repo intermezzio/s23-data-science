@@ -89,15 +89,17 @@ library(broom)
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-    ## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-    ## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+    ## ✔ purrr     1.0.1     
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
     ## ✖ dplyr::select() masks MASS::select()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ``` r
 filename_samples <- "./data/al_samples.csv"
@@ -157,7 +159,7 @@ df_samples
     ##  8   39674.
     ##  9   40144.
     ## 10   39865.
-    ## # … with 15 more rows
+    ## # ℹ 15 more rows
 
 Data Dictionary:
 
@@ -366,9 +368,8 @@ df_norm_pof
 - Assuming your scopus is the probability of failure `POF` defined
   above, does your estimate exhibit real variability, induced
   variability, or both?
-  - My estimate exhibits both because it inherits both real and induced
-    variability when observing the distribution of strengths of
-    different parts
+  - My estimate exhibits real variability when observing the
+    distribution of strengths of different parts
 - Does this confidence interval imply that `POF < 0.03`?
   - Because the confidence interval is fully in the range of
     `POF < 0.03` (the high is about `0.023`), the data do suggest that
@@ -485,9 +486,9 @@ df_samples %>% estimate_pof()
     physical test data.
 - With the scopus as the `POF`, would uncertainty due to *limited
   physical tests* be induced or real?
-  - This uncertainty would be induced and real because physical tests
-    can have real error due to their manufacturing processes and induced
-    error from testing them.
+  - This uncertainty would be real because physical tests can have real
+    error due to their manufacturing processes and we can assume minimal
+    to no induced error because of the testing procedures.
 
 ## Quantifying sampling uncertainty
 

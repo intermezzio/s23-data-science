@@ -45,6 +45,7 @@ Andrew Mascillaro
   - [**q9** Go deeper: Pose at least one more question about the data
     and fit at least one more model in support of answering that
     question.](#q9-go-deeper-pose-at-least-one-more-question-about-the-data-and-fit-at-least-one-more-model-in-support-of-answering-that-question)
+  - [**Presentation**](#presentation)
   - [Further Reading](#further-reading)
 
 *Purpose*: In this last challenge we’ll focus on using logistic
@@ -92,14 +93,16 @@ dataset on Massachusetts State Patrol police stops.
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-    ## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-    ## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.2     ✔ readr     2.1.4
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+    ## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+    ## ✔ purrr     1.0.1     
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 ``` r
 library(broom)
@@ -187,6 +190,18 @@ df_data %>% summary()
     ##  RI     :  39375                              
     ##  (Other): 109857                              
     ##  NA's   :   9814
+
+Observations
+
+- This dataset has a large collection of police records with information
+  about
+  - Sex
+  - Race
+  - Search details (eg was a search conducted, did it find anything)
+  - Arrest / sentence details (eg was the person arrested or warned)
+  - Where this took place (county, plus license plate state)
+- Some columns have pre-processed and post-processed versions, like race
+  and reason_for_stop
 
 Note that we have both a `subject_race` and `race_Raw` column. There are
 a few possibilities as to what `race_Raw` represents:
@@ -340,6 +355,9 @@ df_clean %>%
 
     ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
     ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
 ![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
@@ -378,11 +396,13 @@ df_clean %>%
 **Observations**:
 
 - How does `arrest_rate` tend to vary with `subject_age`?
-  - (Your response here)
+  - Arrest rate is higher with a low subject age (in the 20s), but
+    slowly lowers as age increases.
 - How does `arrest_rate` tend to vary with `subject_sex`?
-  - (Your response here)
+  - Arrest rate is higher for men than women.
 - How does `arrest_rate` tend to vary with `subject_race`?
-  - (Your response here)
+  - Arrest rate is highest for hispanics, followed by black people,
+    followed by white people.
 
 # Modeling
 
@@ -454,6 +474,12 @@ level. Therefore we can use
 ``` r
 ## TODO: Re-fit the logistic regression, but set "white" as the reference
 ## level for subject_race
+rm(fit_q4, fit_q6)
+```
+
+    ## Warning in rm(fit_q4, fit_q6): object 'fit_q4' not found
+
+``` r
 fit_q7 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex,
@@ -507,6 +533,7 @@ in a particular way in the next task.
 ``` r
 ## TODO: Repeat the modeling above, but control for whether contraband was found
 ## during the police stop
+rm(fit_q7)
 fit_q8 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex + contraband_found,
@@ -552,6 +579,7 @@ fit_q8 %>% tidy()
 Do different counties have different arrest rates?
 
 ``` r
+rm(fit_q8)
 fit_q9 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex + county_name,
@@ -608,6 +636,215 @@ other logic necessary :) (don’t dock points for this)
 - What other data would help make further conclusions?
   - More fine-grained data about location, like city, neighborhood, and
     time of day
+
+### **Presentation**
+
+Create your own tests
+
+``` r
+## TODO: Re-fit the logistic regression, but set "white" as the reference
+## level for subject_race
+rm(fit_q9)
+fit_p1 <-
+  glm(
+    formula = arrest_made ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        subject_race %in% c("white", "black", "hispanic"),
+        contraband_drugs == TRUE
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white"),
+        outcome = relevel(factor(outcome), ref = "warning")
+      ),
+    family = "binomial"
+  )
+fit_p1 %>% tidy()
+```
+
+    ## # A tibble: 5 × 5
+    ##   term                 estimate std.error statistic   p.value
+    ##   <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    ## 1 (Intercept)          -1.40      0.0509    -27.5   5.29e-167
+    ## 2 subject_age           0.0305    0.00161    19.0   2.27e- 80
+    ## 3 subject_raceblack     0.00876   0.0427      0.205 8.38e-  1
+    ## 4 subject_racehispanic  0.399     0.0404      9.87  5.49e- 23
+    ## 5 subject_sexfemale    -0.271     0.0428     -6.33  2.45e- 10
+
+``` r
+rm(fit_p1)
+fit_p2 <-
+  glm(
+    formula = frisk_performed ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        !is.na(frisk_performed),
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white")
+      ),
+    family = "binomial"
+  )
+fit_p2 %>% tidy()
+```
+
+    ## # A tibble: 5 × 5
+    ##   term                 estimate std.error statistic  p.value
+    ##   <chr>                   <dbl>     <dbl>     <dbl>    <dbl>
+    ## 1 (Intercept)          -2.50      0.0572     -43.7  0       
+    ## 2 subject_age          -0.00331   0.00169     -1.96 5.01e- 2
+    ## 3 subject_raceblack     0.0664    0.0488       1.36 1.74e- 1
+    ## 4 subject_racehispanic  0.0816    0.0438       1.86 6.24e- 2
+    ## 5 subject_sexfemale    -0.509     0.0547      -9.30 1.41e-20
+
+``` r
+df_data %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic"),
+    search_conducted == FALSE
+  ) %>%
+  summary()
+```
+
+    ##  raw_row_number          date              location         county_name       
+    ##  Length:3165900     Min.   :2007-01-01   Length:3165900     Length:3165900    
+    ##  Class :character   1st Qu.:2009-04-28   Class :character   Class :character  
+    ##  Mode  :character   Median :2011-07-14   Mode  :character   Mode  :character  
+    ##                     Mean   :2011-07-21                                        
+    ##                     3rd Qu.:2013-08-30                                        
+    ##                     Max.   :2015-12-31                                        
+    ##                                                                               
+    ##   subject_age                     subject_race     subject_sex     
+    ##  Min.   :10.00    asian/pacific islander:      0   male  :2181528  
+    ##  1st Qu.:25.00    black                 : 343182   female: 982235  
+    ##  Median :34.00    hispanic              : 327373   NA's  :   2137  
+    ##  Mean   :36.61    white                 :2495345                   
+    ##  3rd Qu.:46.00    other                 :      0                   
+    ##  Max.   :94.00    unknown               :      0                   
+    ##  NA's   :135770                                                    
+    ##          type         arrest_made     citation_issued warning_issued 
+    ##  pedestrian:      0   Mode :logical   Mode :logical   Mode :logical  
+    ##  vehicular :3165900   FALSE:3093808   FALSE:1161349   FALSE:2080359  
+    ##                       TRUE :71249     TRUE :2003708   TRUE :1084698  
+    ##                       NA's :843       NA's :843       NA's :843      
+    ##                                                                      
+    ##                                                                      
+    ##                                                                      
+    ##      outcome        contraband_found contraband_drugs contraband_weapons
+    ##  warning :1084698   Mode:logical     Mode:logical     Mode:logical      
+    ##  citation:2003708   NA's:3165900     NA's:3165900     NA's:3165900      
+    ##  summons :      0                                                       
+    ##  arrest  :  71249                                                       
+    ##  NA's    :   6245                                                       
+    ##                                                                         
+    ##                                                                         
+    ##  contraband_alcohol contraband_other frisk_performed search_conducted
+    ##  Mode :logical      Mode:logical     Mode:logical    Mode :logical   
+    ##  FALSE:3157218      NA's:3165900     TRUE:685        FALSE:3165900   
+    ##  TRUE :8682                          NA's:3165215                    
+    ##                                                                      
+    ##                                                                      
+    ##                                                                      
+    ##                                                                      
+    ##          search_basis     reason_for_stop    vehicle_type      
+    ##  k9            :      0   Length:3165900     Length:3165900    
+    ##  plain view    :      0   Class :character   Class :character  
+    ##  consent       :      0   Mode  :character   Mode  :character  
+    ##  probable cause:      0                                        
+    ##  other         :      0                                        
+    ##  NA's          :3165900                                        
+    ##                                                                
+    ##  vehicle_registration_state   raw_Race        
+    ##  MA     :2830990            Length:3165900    
+    ##  CT     :  78497            Class :character  
+    ##  NY     :  63186            Mode  :character  
+    ##  NH     :  48401                              
+    ##  RI     :  37126                              
+    ##  (Other):  99804                              
+    ##  NA's   :   7896
+
+``` r
+df_data %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic"),
+    contraband_drugs == TRUE
+  ) %>%
+  group_by(outcome) %>% 
+  summarize(
+    total = n()
+  )
+```
+
+    ## # A tibble: 4 × 2
+    ##   outcome  total
+    ##   <fct>    <int>
+    ## 1 warning   2532
+    ## 2 citation  9250
+    ## 3 arrest    7179
+    ## 4 <NA>        47
+
+``` r
+rm(fit_p2)
+fit_p3 <-
+  glm(
+    formula = searched_for_cause ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white"),
+        searched_for_cause = search_conducted & (search_basis == "probable cause")
+      ),
+    family = "binomial"
+  )
+fit_p3 %>% tidy()
+```
+
+    ## # A tibble: 5 × 5
+    ##   term                 estimate std.error statistic   p.value
+    ##   <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    ## 1 (Intercept)           -3.01    0.0213      -142.  0        
+    ## 2 subject_age           -0.0551  0.000661     -83.4 0        
+    ## 3 subject_raceblack      0.527   0.0175        30.1 3.97e-199
+    ## 4 subject_racehispanic   0.594   0.0167        35.6 3.09e-277
+    ## 5 subject_sexfemale     -0.743   0.0167       -44.5 0
+
+``` r
+rm(fit_p3)
+inequality_stats <- function(df) {
+  glm(
+    data = df,
+    formula = arrest_made ~ subject_age + subject_race + subject_sex,
+    family = "binomial"
+  ) %>%
+    tidy()
+}
+
+df_clean %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic")
+  ) %>%
+  mutate(
+    subject_race = relevel(factor(subject_race), ref = "white")
+  ) %>%
+  group_by(county_name) %>% 
+  group_modify(~ inequality_stats(.x)) %>% 
+  filter(term == "subject_raceblack") %>% 
+  left_join(
+    mass_counties,
+    by = "county_name"
+  ) %>% 
+  rename(bias_against_black_drivers = "estimate") %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = bias_against_black_drivers)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis") +
+  theme_maps
+```
+
+![](c12-policing-assignment_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ## Further Reading
 

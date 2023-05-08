@@ -211,7 +211,7 @@ df_norm_pof
 ```
 
 - Assuming your scopus is the probability of failure `POF` defined above, does your estimate exhibit real variability, induced variability, or both?
-  - My estimate exhibits both because it inherits both real and induced
+  - My estimate exhibits real
   variability when observing the distribution of strengths of different parts
 - Does this confidence interval imply that `POF < 0.03`?
   - Because the confidence interval is fully in the range of `POF < 0.03` (the
@@ -307,9 +307,9 @@ df_samples %>% estimate_pof()
   - Yes because the lognormal model is still made from the limited physical
   test data.
 - With the scopus as the `POF`, would uncertainty due to *limited physical tests* be induced or real?
-  - This uncertainty would be induced and real because physical tests can have
-  real error due to their manufacturing processes and induced error from
-  testing them.
+  - This uncertainty would be real because physical tests can have
+  real error due to their manufacturing processes and we can assume minimal to
+  no induced error because of the testing procedures.
 
 ## Quantifying sampling uncertainty
 <!-- --------------------------------------- -->

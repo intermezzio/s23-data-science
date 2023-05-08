@@ -61,7 +61,16 @@ df_data <- readRDS(filename)
 ```{r}
 df_data %>% summary()
 ```
+Observations
 
+- This dataset has a large collection of police records with information about
+  - Sex
+  - Race
+  - Search details (eg was a search conducted, did it find anything)
+  - Arrest / sentence details (eg was the person arrested or warned)
+  - Where this took place (county, plus license plate state)
+- Some columns have pre-processed and post-processed versions, like race and
+  reason_for_stop
 
 Note that we have both a `subject_race` and `race_Raw` column. There are a few possibilities as to what `race_Raw` represents:
 
@@ -213,11 +222,13 @@ df_clean %>%
 **Observations**:
 
 - How does `arrest_rate` tend to vary with `subject_age`?
-  - (Your response here)
+  - Arrest rate is higher with a low subject age (in the 20s), but slowly
+    lowers as age increases.
 - How does `arrest_rate` tend to vary with `subject_sex`?
-  - (Your response here)
+  - Arrest rate is higher for men than women.
 - How does `arrest_rate` tend to vary with `subject_race`?
-  - (Your response here)
+  - Arrest rate is highest for hispanics, followed by black people, followed by
+    white people.
 
 # Modeling
 <!-- -------------------------------------------------- -->
@@ -260,6 +271,7 @@ By default `glm` uses the first factor level present as the reference level. The
 ```{r q7-task}
 ## TODO: Re-fit the logistic regression, but set "white" as the reference
 ## level for subject_race
+rm(fit_q4, fit_q6)
 fit_q7 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex,
@@ -298,6 +310,7 @@ One way we can explain differential arrest rates is to include some measure indi
 ```{r q8-task}
 ## TODO: Repeat the modeling above, but control for whether contraband was found
 ## during the police stop
+rm(fit_q7)
 fit_q8 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex + contraband_found,
@@ -329,6 +342,7 @@ fit_q8 %>% tidy()
 Do different counties have different arrest rates?
 
 ```{r}
+rm(fit_q8)
 fit_q9 <-
   glm(
     formula = arrest_made ~ subject_age + subject_race + subject_sex + county_name,
@@ -364,6 +378,123 @@ logic necessary :) (don't dock points for this)
 - What other data would help make further conclusions?
   - More fine-grained data about location, like city, neighborhood, and
     time of day
+
+### __Presentation__
+
+Create your own tests
+
+```{r}
+## TODO: Re-fit the logistic regression, but set "white" as the reference
+## level for subject_race
+rm(fit_q9)
+fit_p1 <-
+  glm(
+    formula = arrest_made ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        subject_race %in% c("white", "black", "hispanic"),
+        contraband_drugs == TRUE
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white"),
+        outcome = relevel(factor(outcome), ref = "warning")
+      ),
+    family = "binomial"
+  )
+fit_p1 %>% tidy()
+```
+
+```{r}
+rm(fit_p1)
+fit_p2 <-
+  glm(
+    formula = frisk_performed ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        !is.na(frisk_performed),
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white")
+      ),
+    family = "binomial"
+  )
+fit_p2 %>% tidy()
+```
+
+
+```{r}
+df_data %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic"),
+    search_conducted == FALSE
+  ) %>%
+  summary()
+```
+
+```{r}
+df_data %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic"),
+    contraband_drugs == TRUE
+  ) %>%
+  group_by(outcome) %>% 
+  summarize(
+    total = n()
+  )
+```
+```{r}
+rm(fit_p2)
+fit_p3 <-
+  glm(
+    formula = searched_for_cause ~ subject_age + subject_race + subject_sex,
+    data = df_data %>%
+      filter(
+        subject_race %in% c("white", "black", "hispanic")
+      ) %>%
+      mutate(
+        subject_race = relevel(factor(subject_race), ref = "white"),
+        searched_for_cause = search_conducted & (search_basis == "probable cause")
+      ),
+    family = "binomial"
+  )
+fit_p3 %>% tidy()
+```
+
+```{r}
+rm(fit_p3)
+inequality_stats <- function(df) {
+  glm(
+    data = df,
+    formula = arrest_made ~ subject_age + subject_race + subject_sex,
+    family = "binomial"
+  ) %>%
+    tidy()
+}
+
+df_clean %>%
+  filter(
+    subject_race %in% c("white", "black", "hispanic")
+  ) %>%
+  mutate(
+    subject_race = relevel(factor(subject_race), ref = "white")
+  ) %>%
+  group_by(county_name) %>% 
+  group_modify(~ inequality_stats(.x)) %>% 
+  filter(term == "subject_raceblack") %>% 
+  left_join(
+    mass_counties,
+    by = "county_name"
+  ) %>% 
+  rename(bias_against_black_drivers = "estimate") %>% 
+  ggplot(aes(x = long, y = lat, group = group, fill = bias_against_black_drivers)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_continuous(type = "viridis") +
+  theme_maps
+  
+
+```
 
 
 ## Further Reading
